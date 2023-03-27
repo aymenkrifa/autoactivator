@@ -22,7 +22,7 @@ autoactivator_folder_path = os.path.dirname(__file__)
 activator_script_path = os.path.join(autoactivator_folder_path, "activator.sh")
 
 for shell in input_shells:
-    if helpers.is_unixbased_system(POSSIBLE_OS):
+    if helpers.is_system_compatible(POSSIBLE_OS):
         if helpers.is_shell_installed(shell):
 
             config_file = os.path.expanduser(f"~/{SHELL_CONFIGS[shell]}")
@@ -57,4 +57,4 @@ for shell in input_shells:
         else:
             print(f"Sorry, '{shell}' is not installed in your system.")
     else:
-        print(f"Sorry, {APP_NAME} is currently only available for Unix-based systems.")
+        print(f"Sorry, {APP_NAME} is currently not supported by your system.")
