@@ -58,3 +58,5 @@ for shell in input_shells:
             print(f"Sorry, '{shell}' is not installed in your system.")
     else:
         print(f"Sorry, {APP_NAME} is currently not supported by your system.")
+
+print(f"The {APP_NAME.title()} is installed in your system. Please restart the terminal in order for the full effect.")
