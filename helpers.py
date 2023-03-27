@@ -4,6 +4,21 @@ from typing import List
 
 
 def is_shell_installed(shell_name: str) -> bool:
+    """
+    Check if the user's system has the compatible
+    chosen shell.
+
+    Parameters
+    ----------
+    shell_name : str
+        Chosen shell name
+
+    Returns
+    -------
+    bool
+        Whether the chosen shell is installed on
+        the user's machine
+    """
     try:
         # Run the shell with the "--version" option to check if it's installed
         subprocess.check_call(
@@ -14,7 +29,21 @@ def is_shell_installed(shell_name: str) -> bool:
         return False
 
 
-def is_unixbased_system(possible_os_list: List[str]) -> bool:
+def is_system_compatible(possible_os_list: List[str]) -> bool:
+    """
+    Check if the user's operating system is compatible with the
+    covered OS list for the project.
+
+    Parameters
+    ----------
+    possible_os_list : List[str]
+        List of convered operating systems
+
+    Returns
+    -------
+    bool
+        Whether the system is compatible or not
+    """
     return any(
         os_value.lower() in sys.platform.lower() for os_value in possible_os_list
     )
