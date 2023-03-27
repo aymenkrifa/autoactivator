@@ -101,6 +101,7 @@ for shell in input_shells:
                 if create_script_file:
                     mode = "w+"
                 else:
+                    print(f"Skipping installation for '{shell}' shell.")
                     continue
             else:
                 mode = "r+"
