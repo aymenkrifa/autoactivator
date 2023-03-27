@@ -53,7 +53,8 @@ for shell in input_shells:
 
                 else:
                     # Append the source command to the end of the config file
-                    f.write(f"""\nsource {activator_script_path}\n""")
+
+                    f.write(f"\n# The {APP_NAME.title()} script\nsource {activator_script_path}\n""")
                     print(f"Activator script sourced in {config_file}")
 
             os.system(f". {config_file}")
