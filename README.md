@@ -1,7 +1,7 @@
 
 # AutoActivator
 
-Autoactivator is a tool for automatically sourcing a shell script upon opening a new terminal window. It supports Bash and Zsh shells.
+Autoactivator is a powerful tool designed to streamline your workflow when working with virtual environments. With Autoactivator, you can easily activate your virtual environments as soon as you enter a corresponding project directory, and stay activated for as long as you're working in that directory. Once you're done with the project and move out of the directory, Autoactivator automatically deactivates the virtual environment for you, ensuring that you don't accidentally use the wrong environment in future projects. This feature makes it easier for developers and programmers to manage multiple virtual environments without having to manually activate or deactivate them every time they switch projects.
 
 ## Installation
 
