@@ -17,9 +17,10 @@ Navigate into the cloned directory
 cd autoactivator
 ```
 
-Run the installation script
+Install the 'pick' package using pip and run the installation script
 
 ```bash
+pip install pick
 python3 install.py
 ```
 
