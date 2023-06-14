@@ -12,13 +12,14 @@ _check_for_venv() {
   # Traverse up the directory tree until a virtualenv is found, or until we reach the root directory
   dir=$PWD
   while [[ "$dir" != "/" ]]; do
-    venv_path=$(find "$dir" -maxdepth 1 -type d -iname "*env" -exec test -e '{}/bin/activate' ';' -print -quit)
-    if [[ "$venv_path" ]]; then
-      # Virtualenv found, activate it and record the original directory
-      source "$venv_path/bin/activate"
-      export VENV_ORIGINAL_DIR="$dir"
-      return
-    fi
+    for venv_dir in "$dir"/*; do
+      if [[ -d "$venv_dir" && -e "$venv_dir/bin/activate" && ! -e "$venv_dir/bin/conda" ]]; then
+        # Virtualenv found, activate it and record the original directory
+        source "$venv_dir/bin/activate"
+        export VENV_ORIGINAL_DIR="$dir"
+        return
+      fi
+    done
     dir=$(dirname "$dir")
   done
 }
