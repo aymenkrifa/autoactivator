@@ -1,3 +1,9 @@
+# ANSI color codes
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+RESET='\033[0m'
+
+
 _check_for_venv() {
   # Check if there's an active virtualenv and exit if found
   if [[ "$VIRTUAL_ENV" ]]; then
@@ -18,7 +24,7 @@ _check_for_venv() {
         if [[ -d "$venv_dir" && -e "$venv_dir/bin/activate" && ! -e "$venv_dir/bin/conda" ]]; then
           # Virtualenv found, activate it and record the original directory
           source "$venv_dir/bin/activate"
-          export VENV_ORIGINAL_DIR="$dir"
+          export VENV_ORIGINAL_DIR="$PWD"
           return
         fi
       done
@@ -35,7 +41,12 @@ _chpwd() {
 
   # If we're changing back to the original directory, reactivate the virtualenv
   if [[ "$VIRTUAL_ENV" && "$PWD" == "${VENV_ORIGINAL_DIR%/}"* ]]; then
-    source "$VIRTUAL_ENV/bin/activate"
+    if [[ ! -e "$VIRTUAL_ENV/bin/activate" ]]; then
+      echo -e "${YELLOW}WARNING: Virtual environment activation failed. It appears that the virtual environment has been moved or deleted.${RESET}"
+      echo -e "${YELLOW}VIRTUAL_ENV variable is pointing to a different path: '$VIRTUAL_ENV'.${RESET}"
+    else
+      source "$VIRTUAL_ENV/bin/activate"
+    fi
   fi
 }
 
