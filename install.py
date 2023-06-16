@@ -2,7 +2,7 @@ import os
 import pick
 import helpers
 
-APP_NAME = "autoactivator"
+APP_NAME = "AutoActivator"
 PROMPT_TITLE = f"Choose which shell do you want to install {APP_NAME} for (you can choose more than one):"
 SHELL_CONFIGS = {"bash": ".bashrc", "zsh": ".zshrc"}
 POSSIBLE_OS = ["linux", "darwin"]
@@ -59,4 +59,4 @@ for shell in input_shells:
     else:
         print(f"Sorry, {APP_NAME} is currently not supported by your system.")
 
-print(f"The {APP_NAME.title()} is installed in your system. Please restart the terminal in order for the full effect.")
+print(f"The {APP_NAME} is installed in your system. Please restart the terminal in order for the full effect.")
