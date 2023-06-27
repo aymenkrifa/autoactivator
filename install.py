@@ -1,5 +1,5 @@
 import os
-import pick
+import curses
 import helpers
 
 APP_NAME = "AutoActivator"
@@ -7,15 +7,12 @@ PROMPT_TITLE = f"Choose which shell do you want to install {APP_NAME} for (you c
 SHELL_CONFIGS = {"bash": ".bashrc", "zsh": ".zshrc"}
 POSSIBLE_OS = ["linux", "darwin"]
 
-install_input = pick.pick(
-    options=list(SHELL_CONFIGS.keys()),
-    title=PROMPT_TITLE,
-    indicator="->",
-    multiselect=True,
-    min_selection_count=1,
+input_shells = curses.wrapper(
+    helpers.pick_shell, 
+    options=list(SHELL_CONFIGS.keys()), 
+    title=PROMPT_TITLE
 )
 
-input_shells = list(zip(*install_input))[0]
 
 # Get the path to the activator script
 autoactivator_folder_path = os.path.dirname(__file__)
