@@ -1,4 +1,5 @@
 import sys
+import curses
 import subprocess
 from typing import List
 
@@ -97,3 +98,76 @@ def user_input_confirmation(question: str, default: str = "yes") -> bool:
             return valid[choice]
         else:
             sys.stdout.write("Please respond with 'yes' or 'no' " "(or 'y' or 'n').\n")
+
+
+def pick_shell(stdscr, options: list, title: str):
+    # Clear the screen
+    stdscr.clear()
+
+    # Initialize the curses settings
+    curses.curs_set(0)
+    stdscr.nodelay(1)
+    stdscr.keypad(1)
+    stdscr.timeout(100)
+
+    # Initialize the selected options list
+    selected_options = []
+
+    # Initialize the current position of the selection
+    current_position = 0
+
+    while True:
+        # Clear the screen
+        stdscr.clear()
+
+        # Print the title
+        stdscr.addstr(0, 0, title, curses.A_BOLD)
+
+        # Print the menu options
+        for i, option in enumerate(options):
+            if option in selected_options:
+                stdscr.addstr(i + 2, 4, "[x] " + option, curses.A_REVERSE)
+            else:
+                stdscr.addstr(i + 2, 4, "[ ] " + option)
+
+            # Display arrow indicator on the current selection
+            if i == current_position:
+                stdscr.addstr(i + 2, 0, "->", curses.A_REVERSE)
+
+        # Refresh the screen to display changes
+        stdscr.refresh()
+
+        # Wait for user input
+        key = stdscr.getch()
+
+        # Handle user input
+        if key == ord("q"):
+            # User finished selecting options
+            break
+        
+        elif key == curses.KEY_UP:
+            # Move the selection up
+            current_position -= 1
+            if current_position < 0:
+                current_position = len(options) - 1
+                
+        elif key == curses.KEY_DOWN:
+            # Move the selection down
+            current_position += 1
+            if current_position >= len(options):
+                current_position = 0
+                
+        elif key == ord(" "):
+            # Toggle the selection of the current option
+            current_option = options[current_position]
+            if current_option in selected_options:
+                selected_options.remove(current_option)
+            else:
+                selected_options.append(current_option)
+                
+        elif key == curses.KEY_ENTER or key == 10 or key == 13:
+            # Process ENTER key to finish selection
+            if len(selected_options) > 0:
+                break
+
+    return selected_options
