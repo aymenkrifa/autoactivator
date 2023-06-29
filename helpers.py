@@ -142,9 +142,8 @@ def pick_shell(stdscr, options: list, title: str):
 
         # Handle user input
         if key == ord("q"):
-            # User finished selecting options
-            break
-        
+            return None
+
         elif key == curses.KEY_UP:
             # Move the selection up
             current_position -= 1
