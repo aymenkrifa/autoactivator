@@ -108,59 +108,62 @@ def user_input_confirmation(question: str, default: str = "yes") -> bool:
 
 
 parser = argparse.ArgumentParser(
-    prog="AutoActivator",
-    epilog="Text at the bottom of help",
+    prog=APP_NAME,
+    description=f"{APP_NAME} - Automatically activate Python virtual environments based on project directories.",
+    epilog="Please restart the terminal after installation for the changes to take effect.",
 )
-parser.add_argument("shell", choices=["bash", "zsh"])
+
+parser.add_argument(
+    "shells",
+    choices=list(SHELL_CONFIGS.keys()),
+    nargs="+",
+    help=f"The shell to install {APP_NAME} for.",
+)
 args = parser.parse_args()
 
-input_shells = [args.shell]
+# Get the chosen shells from the arguments
+chosen_shells = args.shells
 
-if input_shells:
+for chosen_shell in chosen_shells:
+    # Check if the chosen shell is installed
+    if not is_shell_installed(chosen_shell):
+        print(f"Error: '{chosen_shell}' is not installed on your system.")
+        sys.exit(1)
+
+    # Check if the system is compatible
+    if not is_system_compatible(POSSIBLE_OS):
+        print(f"Error: {APP_NAME} is currently not supported on your system.")
+        sys.exit(1)
+
     # Get the path to the activator script
     autoactivator_folder_path = os.path.dirname(__file__)
     activator_script_path = os.path.join(autoactivator_folder_path, "activator.sh")
 
-    for shell in input_shells:
-        if is_system_compatible(POSSIBLE_OS):
-            if is_shell_installed(shell):
-                config_file = os.path.expanduser(f"~/{SHELL_CONFIGS[shell]}")
-                if not os.path.exists(config_file):
-                    create_script_file = user_input_confirmation(
-                        f"File '{config_file}' doesn't exist, it is required for the installation on '{shell}' shell. Do you want to create it?"
-                    )
+    # Get the config file for the chosen shell
+    config_file = os.path.expanduser(f"~/{SHELL_CONFIGS[chosen_shell]}")
 
-                    if create_script_file:
-                        mode = "w+"
-                    else:
-                        print(f"Skipping installation for '{shell}' shell.")
-                        continue
-                else:
-                    mode = "r+"
+    # Check if the config file exists
+    if not os.path.exists(config_file):
+        create_script_file = user_input_confirmation(
+            f"File '{config_file}' doesn't exist, it is required for the installation on '{chosen_shell}' shell. Do you want to create it?"
+        )
 
-                # Check if the config file already sources the activator script
-                with open(config_file, mode) as f:
-                    content = f.read()
+        if not create_script_file:
+            print(f"Skipping installation for '{chosen_shell}' shell.")
+            continue
 
-                    if f"source {activator_script_path}" in content:
-                        print(f"Activator script already sourced in {config_file}")
+    # Check if the config file already sources the activator script
+    with open(config_file, "r+") as f:
+        content = f.read()
 
-                    else:
-                        # Append the source command to the end of the config file
-                        f.write(
-                            f"\n# The {APP_NAME.title()} script\nsource {activator_script_path}\n"
-                        )
-                        print(f"Activator script sourced in {config_file}")
-
-                os.system(f". {config_file}")
-
-            else:
-                print(f"Sorry, '{shell}' is not installed in your system.")
+        if f"source {activator_script_path}" in content:
+            print(f"Activator script is already sourced in {config_file}")
         else:
-            print(f"Sorry, {APP_NAME} is currently not supported by your system.")
+            # Append the source command to the end of the config file
+            f.write(f"\n# The {APP_NAME.title()} script\nsource {activator_script_path}\n")
+            print(f"Activator script sourced in {config_file}")
 
-    print(
-        f"The {APP_NAME} is installed in your system. Please restart the terminal in order for the full effect."
-    )
-else:
-    print("Abort: User quit.")
+    # Source the config file in the current shell
+    os.system(f". {config_file}")
+
+print(f"The {APP_NAME} is installed for the chosen shells. Please restart the terminal for the changes to take effect.")
