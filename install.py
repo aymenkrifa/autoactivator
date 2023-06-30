@@ -7,10 +7,9 @@ PROMPT_TITLE = f"Choose which shell do you want to install {APP_NAME} for (you c
 SHELL_CONFIGS = {"bash": ".bashrc", "zsh": ".zshrc"}
 POSSIBLE_OS = ["linux", "darwin"]
 
+
 input_shells = curses.wrapper(
-    helpers.pick_shell, 
-    options=list(SHELL_CONFIGS.keys()), 
-    title=PROMPT_TITLE
+    helpers.pick_shell, options=list(SHELL_CONFIGS.keys()), title=PROMPT_TITLE
 )
 
 if input_shells:
@@ -21,10 +20,8 @@ if input_shells:
     for shell in input_shells:
         if helpers.is_system_compatible(POSSIBLE_OS):
             if helpers.is_shell_installed(shell):
-
                 config_file = os.path.expanduser(f"~/{SHELL_CONFIGS[shell]}")
                 if not os.path.exists(config_file):
-
                     create_script_file = helpers.user_input_confirmation(
                         f"File '{config_file}' doesn't exist, it is required for the installation on '{shell}' shell. Do you want to create it?"
                     )
@@ -46,7 +43,9 @@ if input_shells:
 
                     else:
                         # Append the source command to the end of the config file
-                        f.write(f"\n# The {APP_NAME.title()} script\nsource {activator_script_path}\n")
+                        f.write(
+                            f"\n# The {APP_NAME.title()} script\nsource {activator_script_path}\n"
+                        )
                         print(f"Activator script sourced in {config_file}")
 
                 os.system(f". {config_file}")
@@ -56,6 +55,8 @@ if input_shells:
         else:
             print(f"Sorry, {APP_NAME} is currently not supported by your system.")
 
-    print(f"The {APP_NAME} is installed in your system. Please restart the terminal in order for the full effect.")
+    print(
+        f"The {APP_NAME} is installed in your system. Please restart the terminal in order for the full effect."
+    )
 else:
     print("Abort: User quit.")
