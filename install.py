@@ -1,7 +1,6 @@
 import os
 import sys
 import curses
-import helpers
 import subprocess
 from typing import List
 
@@ -180,7 +179,7 @@ def pick_shell(stdscr, options: list, title: str):
 
 
 input_shells = curses.wrapper(
-    helpers.pick_shell, options=list(SHELL_CONFIGS.keys()), title=PROMPT_TITLE
+    pick_shell, options=list(SHELL_CONFIGS.keys()), title=PROMPT_TITLE
 )
 
 if input_shells:
@@ -189,11 +188,11 @@ if input_shells:
     activator_script_path = os.path.join(autoactivator_folder_path, "activator.sh")
 
     for shell in input_shells:
-        if helpers.is_system_compatible(POSSIBLE_OS):
-            if helpers.is_shell_installed(shell):
+        if is_system_compatible(POSSIBLE_OS):
+            if is_shell_installed(shell):
                 config_file = os.path.expanduser(f"~/{SHELL_CONFIGS[shell]}")
                 if not os.path.exists(config_file):
-                    create_script_file = helpers.user_input_confirmation(
+                    create_script_file = user_input_confirmation(
                         f"File '{config_file}' doesn't exist, it is required for the installation on '{shell}' shell. Do you want to create it?"
                     )
 
