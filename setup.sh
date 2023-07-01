@@ -2,7 +2,7 @@
 
 TARGET_DIR="$HOME/.autoactivator"
 REPO_URL="https://github.com/aymenkrifa/autoactivator"
-BRANCH="main"
+BRANCH="feature/host_setup_shell_script"
 
 # Create the target directory
 mkdir -p "$TARGET_DIR"
