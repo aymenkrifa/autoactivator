@@ -17,4 +17,4 @@ cd "$TARGET_DIR"
 git checkout "$BRANCH"
 
 # Run the install.py script
-python3 install.py
+python3 install.py bash
