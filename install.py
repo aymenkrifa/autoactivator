@@ -3,9 +3,11 @@ import sys
 import argparse
 import subprocess
 from typing import List
+from pathlib import Path
 
 
 APP_NAME = "AutoActivator"
+TARGET_FOLDER = os.path.join(str(Path.home()), ".autoactivator")
 PROMPT_TITLE = f"Choose which shell do you want to install {APP_NAME} for (you can choose more than one), press 'q' to quit."
 SHELL_CONFIGS = {"bash": ".bashrc", "zsh": ".zshrc"}
 POSSIBLE_OS = ["linux", "darwin"]
@@ -136,8 +138,7 @@ for chosen_shell in chosen_shells:
         sys.exit(1)
 
     # Get the path to the activator script
-    autoactivator_folder_path = os.path.dirname(__file__)
-    activator_script_path = os.path.join(autoactivator_folder_path, "activator.sh")
+    dotactivator_script_path = os.path.join(TARGET_FOLDER, "activator.sh")
 
     # Get the config file for the chosen shell
     config_file = os.path.expanduser(f"~/{SHELL_CONFIGS[chosen_shell]}")
@@ -156,11 +157,23 @@ for chosen_shell in chosen_shells:
     with open(config_file, "r+") as f:
         content = f.read()
 
-        if f"source {activator_script_path}" in content:
+        if 'source "$activator_path"' in content:
             print(f"Activator script is already sourced in {config_file}")
         else:
             # Append the source command to the end of the config file
-            f.write(f"\n# The {APP_NAME.title()} script\nsource {activator_script_path}\n")
+            f.write(
+                f"""\n
+############################# {APP_NAME} #############################
+activator_path="{dotactivator_script_path}"
+
+if [ -e "$activator_path" ]; then
+source "$activator_path"
+else
+echo -e "\\033[1m{APP_NAME}\\033[0m: Activator script path not found: $activator_path"
+fi
+#########################################################################
+"""
+            )
             print(f"Activator script sourced in {config_file}")
 
     # Source the config file in the current shell
