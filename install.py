@@ -60,56 +60,6 @@ def is_system_compatible(possible_os_list: List[str]) -> bool:
     )
 
 
-def user_input_confirmation(question: str, default: str = "yes") -> bool:
-    """
-    Ask a yes/no question via input() and return the answer as a boolean value.
-
-    Parameters
-    ----------
-    question : str
-        Question presented to the user in the prompt
-    default : str, optional
-        The presumed answer if the user just hits <Enter>, by default "yes"
-
-        The 'default' argument must be:
-            - "yes": <Enter> is interpreted as a yes,
-            - "no" or None: meaning an answer is required of the user
-
-    Returns
-    -------
-    bool
-        return True for "yes"
-        return False for "no"
-
-    Raises
-    ------
-    ValueError
-        If the default parameter is neither a 'yes', 'no' or None, raise a ValueError.
-    """
-
-    # Initilize a yes/no value mapper
-    valid = {"yes": True, "y": True, "ye": True, "no": False, "n": False}
-
-    if default is None:
-        prompt = " [y/n] "
-    elif default == "yes":
-        prompt = " [Y/n] "
-    elif default == "no":
-        prompt = " [y/N] "
-    else:
-        raise ValueError("invalid default answer: '%s'" % default)
-
-    while True:
-        sys.stdout.write(question + prompt)
-        choice = input().lower()
-        if default is not None and choice == "":
-            return valid[default]
-        elif choice in valid:
-            return valid[choice]
-        else:
-            sys.stdout.write("Please respond with 'yes' or 'no' " "(or 'y' or 'n').\n")
-
-
 parser = argparse.ArgumentParser(
     prog=APP_NAME,
     description=f"{APP_NAME} - Automatically activate Python virtual environments based on project directories.",
@@ -125,45 +75,40 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-# Get the chosen shells from the arguments
 chosen_shells = args.shells
+not_installed_shells = 0
+installed_shells = []
 
 for chosen_shell in chosen_shells:
-    # Check if the chosen shell is installed
+    print()
     if not is_shell_installed(chosen_shell):
         print(f"Error: '{chosen_shell}' is not installed on your system.")
         sys.exit(1)
 
-    # Check if the system is compatible
     if not is_system_compatible(POSSIBLE_OS):
         print(f"Error: {APP_NAME} is currently not supported on your system.")
         sys.exit(1)
 
-    # Get the path to the activator script
+    # Get the path to the activator script and the config file
     dotactivator_script_path = os.path.join(TARGET_FOLDER, "activator.sh")
 
     config_file = os.path.join(HOME_FOLER, SHELL_CONFIGS[chosen_shell])
 
     if not os.path.exists(config_file):
-        create_script_file = user_input_confirmation(
-            f"File '{config_file}' doesn't exist, it is required for the installation on '{chosen_shell}' shell. Do you want to create it?"
+        print(
+            f"File '{config_file}' doesn't exist, it is required for the installation on '{chosen_shell}' shell. You can create it using 'touch ~/{chosen_shell}' and then re-run the script"
         )
 
-        if create_script_file:
-            os.mkdir(config_file)
-            print(f"Configuration file for '{chosen_shell}' has been created at {config_file}")
-        else:
-            print(f"Skipping installation for '{chosen_shell}' shell.")
-            continue
+        print(f"Skipping installation for '{chosen_shell}' shell.")
+        not_installed_shells += 1
+        continue
 
-    # Check if the config file already sources the activator script
     with open(config_file, "r+") as f:
         content = f.read()
 
         if 'source "$activator_path"' in content:
             print(f"Activator script is already sourced in {config_file}")
         else:
-            # Append the source command to the end of the config file
             f.write(
                 f"""\n
 ############################# {APP_NAME} #############################
@@ -181,5 +126,12 @@ fi
 
     # Source the config file in the current shell
     os.system(f". {config_file}")
+    installed_shells.append(chosen_shell)
 
-print(f"The {APP_NAME} is installed for the chosen shells. Please restart the terminal for the changes to take effect.")
+if not_installed_shells == len(chosen_shells):
+    print("ERROR: An error occured while setting-up all the chosen shell")
+    print("Please check the GitHub page for the issue encountered.")
+else:
+    print(
+        f"\nThe {APP_NAME} is installed for {installed_shells}. Please restart the terminal for the changes to take effect."
+    )
