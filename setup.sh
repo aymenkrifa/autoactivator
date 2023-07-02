@@ -5,7 +5,7 @@ shell="$1"
 TARGET_DIR="$HOME/.autoactivator"
 REPO_URL="https://github.com/aymenkrifa/autoactivator"
 BRANCH="feature/host_setup_shell_script"
-PYTHON_EXECUTABLE="python3"
+PYTHON_EXECUTABLE="python"
 
 install_script_path="$TARGET_DIR/install.py"
 
