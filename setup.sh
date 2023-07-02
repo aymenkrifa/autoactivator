@@ -3,7 +3,7 @@
 shell="$@"
 
 TARGET_DIR="$HOME/.autoactivator"
-REPO_URL="https://github.com/aymenkrifa/autoactivator/main"
+REPO_URL="https://github.com/aymenkrifa/autoactivator"
 PYTHON_EXECUTABLE="python3"
 
 install_script_path="$TARGET_DIR/install.py"
