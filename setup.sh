@@ -1,20 +1,18 @@
 #!/bin/bash
 
+shell="$@"
+
 TARGET_DIR="$HOME/.autoactivator"
 REPO_URL="https://github.com/aymenkrifa/autoactivator"
-BRANCH="main"
+BRANCH="feature/host_setup_shell_script"
+PYTHON_EXECUTABLE="python3"
 
-# Create the target directory
+install_script_path="$TARGET_DIR/install.py"
+
 mkdir -p "$TARGET_DIR"
-
-# Clone the repository into the target directory
 git clone "$REPO_URL" "$TARGET_DIR"
 
-# Change to the cloned directory
-cd "$TARGET_DIR"
-
-# Checkout the desired branch
+cd $TARGET_DIR
 git checkout "$BRANCH"
 
-# Run the install.py script
-python3 install.py
+"$PYTHON_EXECUTABLE" "$install_script_path" $shell

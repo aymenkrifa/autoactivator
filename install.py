@@ -3,9 +3,12 @@ import sys
 import argparse
 import subprocess
 from typing import List
+from pathlib import Path
 
 
 APP_NAME = "AutoActivator"
+HOME_FOLER = str(Path.home())
+TARGET_FOLDER = os.path.join(HOME_FOLER, ".autoactivator")
 PROMPT_TITLE = f"Choose which shell do you want to install {APP_NAME} for (you can choose more than one), press 'q' to quit."
 SHELL_CONFIGS = {"bash": ".bashrc", "zsh": ".zshrc"}
 POSSIBLE_OS = ["linux", "darwin"]
@@ -117,6 +120,7 @@ parser.add_argument(
     "shells",
     choices=list(SHELL_CONFIGS.keys()),
     nargs="+",
+    type=str.lower,
     help=f"The shell to install {APP_NAME} for.",
 )
 args = parser.parse_args()
@@ -136,19 +140,19 @@ for chosen_shell in chosen_shells:
         sys.exit(1)
 
     # Get the path to the activator script
-    autoactivator_folder_path = os.path.dirname(__file__)
-    activator_script_path = os.path.join(autoactivator_folder_path, "activator.sh")
+    dotactivator_script_path = os.path.join(TARGET_FOLDER, "activator.sh")
 
-    # Get the config file for the chosen shell
-    config_file = os.path.expanduser(f"~/{SHELL_CONFIGS[chosen_shell]}")
+    config_file = os.path.join(HOME_FOLER, SHELL_CONFIGS[chosen_shell])
 
-    # Check if the config file exists
     if not os.path.exists(config_file):
         create_script_file = user_input_confirmation(
             f"File '{config_file}' doesn't exist, it is required for the installation on '{chosen_shell}' shell. Do you want to create it?"
         )
 
-        if not create_script_file:
+        if create_script_file:
+            os.mkdir(config_file)
+            print(f"Configuration file for '{chosen_shell}' has been created at {config_file}")
+        else:
             print(f"Skipping installation for '{chosen_shell}' shell.")
             continue
 
@@ -156,11 +160,23 @@ for chosen_shell in chosen_shells:
     with open(config_file, "r+") as f:
         content = f.read()
 
-        if f"source {activator_script_path}" in content:
+        if 'source "$activator_path"' in content:
             print(f"Activator script is already sourced in {config_file}")
         else:
             # Append the source command to the end of the config file
-            f.write(f"\n# The {APP_NAME.title()} script\nsource {activator_script_path}\n")
+            f.write(
+                f"""\n
+############################# {APP_NAME} #############################
+activator_path="{dotactivator_script_path}"
+
+if [ -e "$activator_path" ]; then
+source "$activator_path"
+else
+echo -e "\\033[1m{APP_NAME}\\033[0m: Activator script path not found: $activator_path"
+fi
+#########################################################################
+"""
+            )
             print(f"Activator script sourced in {config_file}")
 
     # Source the config file in the current shell
