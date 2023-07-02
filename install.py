@@ -7,7 +7,8 @@ from pathlib import Path
 
 
 APP_NAME = "AutoActivator"
-TARGET_FOLDER = os.path.join(str(Path.home()), ".autoactivator")
+HOME_FOLER = str(Path.home())
+TARGET_FOLDER = os.path.join(HOME_FOLER, ".autoactivator")
 PROMPT_TITLE = f"Choose which shell do you want to install {APP_NAME} for (you can choose more than one), press 'q' to quit."
 SHELL_CONFIGS = {"bash": ".bashrc", "zsh": ".zshrc"}
 POSSIBLE_OS = ["linux", "darwin"]
@@ -140,16 +141,17 @@ for chosen_shell in chosen_shells:
     # Get the path to the activator script
     dotactivator_script_path = os.path.join(TARGET_FOLDER, "activator.sh")
 
-    # Get the config file for the chosen shell
-    config_file = os.path.expanduser(f"~/{SHELL_CONFIGS[chosen_shell]}")
+    config_file = os.path.join(HOME_FOLER, SHELL_CONFIGS[chosen_shell])
 
-    # Check if the config file exists
     if not os.path.exists(config_file):
         create_script_file = user_input_confirmation(
             f"File '{config_file}' doesn't exist, it is required for the installation on '{chosen_shell}' shell. Do you want to create it?"
         )
 
-        if not create_script_file:
+        if create_script_file:
+            os.mkdir(config_file)
+            print(f"Configuration file for '{chosen_shell}' has been created at {config_file}")
+        else:
             print(f"Skipping installation for '{chosen_shell}' shell.")
             continue
 
