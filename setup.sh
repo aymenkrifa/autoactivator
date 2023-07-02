@@ -15,4 +15,4 @@ git clone "$REPO_URL" "$TARGET_DIR"
 cd $TARGET_DIR
 git checkout "$BRANCH"
 
-PYTHON_EXECUTABLE "$install_script_path" "$shell"
+"$PYTHON_EXECUTABLE" "$install_script_path" "$shell"
