@@ -120,6 +120,7 @@ parser.add_argument(
     "shells",
     choices=list(SHELL_CONFIGS.keys()),
     nargs="+",
+    type=str.lower,
     help=f"The shell to install {APP_NAME} for.",
 )
 args = parser.parse_args()
