@@ -112,6 +112,7 @@ for chosen_shell in chosen_shells:
             f.write(
                 f"""\n
 ############################# {APP_NAME} #############################
+autoactivator_folder="{TARGET_FOLDER}"
 activator_path="{dotactivator_script_path}"
 
 if [ -e "$activator_path" ]; then
@@ -119,6 +120,26 @@ source "$activator_path"
 else
 echo -e "\\033[1m{APP_NAME}\\033[0m: Activator script path not found: $activator_path"
 fi
+
+autoactivator_update() {{
+    if [ -d "$autoactivator_folder" ]; then
+        cd "$autoactivator_folder" && git pull origin main
+        source "$activator_path"
+    else
+        echo -e "\033[1m{APP_NAME}\033[0m: {APP_NAME} directory not found."
+    fi
+}}
+
+autoactivator() {{
+    case "$1" in
+        "update")
+            autoactivator_update
+            ;;
+        *)
+            echo -e "\033[1m{APP_NAME}\033[0m: Invalid command. Usage: autoactivator [update]"
+            ;;
+    esac
+}}
 #########################################################################
 """
             )
