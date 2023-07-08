@@ -123,7 +123,7 @@ fi
 
 autoactivator_update() {{
     if [ -d "$autoactivator_folder" ]; then
-        cd "$autoactivator_folder" && git pull origin main
+        git --git-dir="$autoactivator_folder/.git" --work-tree="$autoactivator_folder" pull origin main
         source "$activator_path"
     else
         echo -e "\033[1m{APP_NAME}\033[0m: {APP_NAME} directory not found."
