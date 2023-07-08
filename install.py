@@ -126,7 +126,7 @@ autoactivator_update() {{
         git --git-dir="$autoactivator_folder/.git" --work-tree="$autoactivator_folder" pull origin main
         source "$activator_path"
     else
-        echo -e "\033[1m{APP_NAME}\033[0m: {APP_NAME} directory not found."
+        echo -e "\\033[1m{APP_NAME}\\033[0m: {APP_NAME} directory not found."
     fi
 }}
 
@@ -136,7 +136,7 @@ autoactivator() {{
             autoactivator_update
             ;;
         *)
-            echo -e "\033[1m{APP_NAME}\033[0m: Invalid command. Usage: autoactivator [update]"
+            echo -e "\\033[1m{APP_NAME}\\033[0m: Invalid command. Usage: autoactivator [update]"
             ;;
     esac
 }}
