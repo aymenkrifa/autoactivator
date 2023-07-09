@@ -88,6 +88,18 @@ source ~/.bashrc   # for Bash
 source ~/.zshrc    # for Zsh
 ```
 
+## Updating AutoActivator
+
+To update AutoActivator to the latest version, you can use the `autoactivator update` command. Follow the steps below:
+
+1. Open your terminal.
+
+2. Run the following command:
+
+   ```bash
+   autoactivator update
+   ```
+
 ## Contributing
 
 Contributions are always welcome!
