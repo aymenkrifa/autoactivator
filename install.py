@@ -7,8 +7,8 @@ from pathlib import Path
 
 
 APP_NAME = "AutoActivator"
-HOME_FOLER = str(Path.home())
-TARGET_FOLDER = os.path.join(HOME_FOLER, ".autoactivator")
+HOME_FOLDER = str(Path.home())
+TARGET_FOLDER = os.path.join(HOME_FOLDER, ".autoactivator")
 PROMPT_TITLE = f"Choose which shell do you want to install {APP_NAME} for (you can choose more than one), press 'q' to quit."
 SHELL_CONFIGS = {"bash": ".bashrc", "zsh": ".zshrc"}
 POSSIBLE_OS = ["linux", "darwin"]
@@ -92,7 +92,7 @@ for chosen_shell in chosen_shells:
     # Get the path to the activator script and the config file
     dotactivator_script_path = os.path.join(TARGET_FOLDER, "activator.sh")
 
-    config_file = os.path.join(HOME_FOLER, SHELL_CONFIGS[chosen_shell])
+    config_file = os.path.join(HOME_FOLDER, SHELL_CONFIGS[chosen_shell])
 
     if not os.path.exists(config_file):
         print(
