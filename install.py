@@ -1,5 +1,6 @@
 import os
 import sys
+import shutil
 import argparse
 import subprocess
 from typing import List
@@ -59,6 +60,21 @@ def is_system_compatible(possible_os_list: List[str]) -> bool:
         os_value.lower() in sys.platform.lower() for os_value in possible_os_list
     )
 
+def backup_shell_config(shell_name: str):
+    """
+    Create a backup of the shell configuration file.
+
+    Parameters
+    ----------
+    shell_name : str
+        Chosen shell name
+    """
+    config_file = os.path.join(HOME_FOLDER, SHELL_CONFIGS[shell_name])
+    if os.path.exists(config_file):
+        backup_file = os.path.join(HOME_FOLDER, f"{SHELL_CONFIGS[shell_name]}.pre-{APP_NAME.lower()}")
+        shutil.copyfile(config_file, backup_file)
+        print(f"Created a backup of {SHELL_CONFIGS[shell_name]} at {backup_file}")
+
 
 parser = argparse.ArgumentParser(
     prog=APP_NAME,
@@ -89,6 +105,8 @@ for chosen_shell in chosen_shells:
         print(f"Error: {APP_NAME} is currently not supported on your system.")
         sys.exit(1)
 
+    backup_shell_config(chosen_shell)
+    
     # Get the path to the activator script and the config file
     dotactivator_script_path = os.path.join(TARGET_FOLDER, "activator.sh")
 
