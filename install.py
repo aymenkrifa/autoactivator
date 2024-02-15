@@ -160,8 +160,8 @@ source {dotactivator_script_path}
             )
             print(f"Activator script sourced in {config_file}")
 
-    # Source the config file in the current shell
-    os.system(f". {config_file}")
+    # Source the config file in the chosen shell
+    os.system(f"{chosen_shell} -c '. {config_file}'")
     installed_shells.append(chosen_shell)
 
 if not_installed_shells == len(chosen_shells):
