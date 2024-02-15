@@ -133,7 +133,7 @@ for chosen_shell in chosen_shells:
             f.write(
                 f"""\n
 ############################# {APP_NAME} #############################
-source {dotactivator_script_path}\n
+source {dotactivator_script_path}
 #########################################################################
 """
             )

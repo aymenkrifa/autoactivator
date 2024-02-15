@@ -1,4 +1,3 @@
-# activator.sh
 APP_NAME="AutoActivator"
 autoactivator_folder="$HOME/.autoactivator"
 activator_path="$autoactivator_folder/activator.sh"
