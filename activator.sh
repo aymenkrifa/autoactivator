@@ -4,6 +4,12 @@ YELLOW='\033[1;33m'
 RESET='\033[0m'
 
 
+# Enable nullglob option for ZSH to support search 
+# without getting an error if no hidden folder was found
+if [[ $(ps -p $$ -ocomm=) == *zsh* ]]; then
+  setopt nullglob
+fi
+
 _check_for_venv() {
   # Check if there's an active virtualenv and exit if found
   if [[ "$VIRTUAL_ENV" ]]; then
@@ -21,8 +27,8 @@ _check_for_venv() {
   dir=$PWD
   while [[ "$dir" != "/" ]]; do
     # Check if there are any virtual environment directories present
-    if [[ $(find "$dir" -maxdepth 1 -type d -name "*" | wc -l) -gt 1 ]]; then
-      for venv_dir in "$dir"/*; do
+    if [[ $(find "$dir" -maxdepth 1 -type d | wc -l) -gt 1 ]]; then
+      for venv_dir in "$dir"/* "$dir"/.*; do
         if [[ -d "$venv_dir" && -e "$venv_dir/bin/activate" && ! -e "$venv_dir/bin/conda" ]]; then
           # Virtualenv found, activate it and record the original directory
           source "$venv_dir/bin/activate"
