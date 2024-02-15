@@ -9,9 +9,7 @@ _check_for_venv() {
   if [[ "$VIRTUAL_ENV" ]]; then
     # If we're changing out of the main directory, deactivate the virtualenv
     if [[ "$PWD" != "${VIRTUAL_ENV%/}"* ]]; then
-      if command -v deactivate &> /dev/null; then
-        deactivate
-      fi
+      deactivate
     else
       return
     fi
