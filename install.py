@@ -111,7 +111,7 @@ for chosen_shell in chosen_shells:
     backup_shell_config(chosen_shell)
 
     # Get the path to the activator script and the config file
-    dotactivator_script_path = os.path.join(TARGET_FOLDER, "shell_snippet.sh")
+    dotactivator_script_path = os.path.join(TARGET_FOLDER, "autoactivator_config.sh")
 
     config_file = os.path.join(HOME_FOLDER, SHELL_CONFIGS[chosen_shell])
 
@@ -126,8 +126,7 @@ for chosen_shell in chosen_shells:
 
     with open(config_file, "r+") as f:
         content = f.read()
-
-        if 'source "$activator_path"' in content:
+        if f'source {dotactivator_script_path}' in content and APP_NAME in content:
             print(f"Activator script is already sourced in {config_file}")
         else:
             f.write(
