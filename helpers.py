@@ -23,7 +23,9 @@ def is_shell_installed(shell_name: str) -> bool:
     try:
         # Run the shell with the "--version" option to check if it's installed
         subprocess.check_call(
-            [shell_name, "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            [shell_name, "--version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
         )
         return True
     except (OSError, subprocess.CalledProcessError):
@@ -46,7 +48,8 @@ def is_system_compatible(possible_os_list: List[str]) -> bool:
         Whether the system is compatible or not
     """
     return any(
-        os_value.lower() in sys.platform.lower() for os_value in possible_os_list
+        os_value.lower() in sys.platform.lower()
+        for os_value in possible_os_list
     )
 
 
@@ -74,7 +77,8 @@ def user_input_confirmation(question: str, default: str = "yes") -> bool:
     Raises
     ------
     ValueError
-        If the default parameter is neither a 'yes', 'no' or None, raise a ValueError.
+        If the default parameter is neither a 'yes', 'no' or None,
+        raise a ValueError.
     """
 
     # Initilize a yes/no value mapper
@@ -97,7 +101,9 @@ def user_input_confirmation(question: str, default: str = "yes") -> bool:
         elif choice in valid:
             return valid[choice]
         else:
-            sys.stdout.write("Please respond with 'yes' or 'no' " "(or 'y' or 'n').\n")
+            sys.stdout.write(
+                "Please respond with 'yes' or 'no' " "(or 'y' or 'n').\n"
+            )
 
 
 def pick_shell(stdscr, options: list, title: str):
@@ -149,13 +155,13 @@ def pick_shell(stdscr, options: list, title: str):
             current_position -= 1
             if current_position < 0:
                 current_position = len(options) - 1
-                
+
         elif key == curses.KEY_DOWN:
             # Move the selection down
             current_position += 1
             if current_position >= len(options):
                 current_position = 0
-                
+
         elif key == ord(" "):
             # Toggle the selection of the current option
             current_option = options[current_position]
@@ -163,7 +169,7 @@ def pick_shell(stdscr, options: list, title: str):
                 selected_options.remove(current_option)
             else:
                 selected_options.append(current_option)
-                
+
         elif key == curses.KEY_ENTER or key == 10 or key == 13:
             # Process ENTER key to finish selection
             if len(selected_options) > 0:
