@@ -7,7 +7,9 @@ def _parse_requirements(path: str) -> List[str]:
     """Returns content of given requirements file."""
     with open(os.path.join(path)) as f:
         return [
-            line.rstrip() for line in f if not (line.isspace() or line.startswith("#"))
+            line.rstrip()
+            for line in f
+            if not (line.isspace() or line.startswith("#"))
         ]
 
 

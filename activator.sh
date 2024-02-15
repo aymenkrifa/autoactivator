@@ -4,7 +4,7 @@ YELLOW='\033[1;33m'
 RESET='\033[0m'
 
 
-# Enable nullglob option for ZSH to support search 
+# Enable nullglob option for ZSH to support search
 # without getting an error if no hidden folder was found
 if [[ $(ps -p $$ -ocomm=) == *zsh* ]]; then
   setopt nullglob
