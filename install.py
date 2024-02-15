@@ -60,6 +60,7 @@ def is_system_compatible(possible_os_list: List[str]) -> bool:
         os_value.lower() in sys.platform.lower() for os_value in possible_os_list
     )
 
+
 def backup_shell_config(shell_name: str):
     """
     Create a backup of the shell configuration file.
@@ -71,7 +72,9 @@ def backup_shell_config(shell_name: str):
     """
     config_file = os.path.join(HOME_FOLDER, SHELL_CONFIGS[shell_name])
     if os.path.exists(config_file):
-        backup_file = os.path.join(HOME_FOLDER, f"{SHELL_CONFIGS[shell_name]}.pre-{APP_NAME.lower()}")
+        backup_file = os.path.join(
+            HOME_FOLDER, f"{SHELL_CONFIGS[shell_name]}.pre-{APP_NAME.lower()}"
+        )
         shutil.copyfile(config_file, backup_file)
         print(f"Created a backup of {SHELL_CONFIGS[shell_name]} at {backup_file}")
 
@@ -106,9 +109,9 @@ for chosen_shell in chosen_shells:
         sys.exit(1)
 
     backup_shell_config(chosen_shell)
-    
+
     # Get the path to the activator script and the config file
-    dotactivator_script_path = os.path.join(TARGET_FOLDER, "activator.sh")
+    dotactivator_script_path = os.path.join(TARGET_FOLDER, "shell_snippet.sh")
 
     config_file = os.path.join(HOME_FOLDER, SHELL_CONFIGS[chosen_shell])
 
@@ -130,34 +133,7 @@ for chosen_shell in chosen_shells:
             f.write(
                 f"""\n
 ############################# {APP_NAME} #############################
-autoactivator_folder="{TARGET_FOLDER}"
-activator_path="{dotactivator_script_path}"
-
-if [ -e "$activator_path" ]; then
-source "$activator_path"
-else
-echo -e "\\033[1m{APP_NAME}\\033[0m: Activator script path not found: $activator_path"
-fi
-
-autoactivator_update() {{
-    if [ -d "$autoactivator_folder" ]; then
-        git --git-dir="$autoactivator_folder/.git" --work-tree="$autoactivator_folder" pull origin main
-        source "$activator_path"
-    else
-        echo -e "\\033[1m{APP_NAME}\\033[0m: {APP_NAME} directory not found."
-    fi
-}}
-
-autoactivator() {{
-    case "$1" in
-        "update")
-            autoactivator_update
-            ;;
-        *)
-            echo -e "\\033[1m{APP_NAME}\\033[0m: Invalid command. Usage: autoactivator [update]"
-            ;;
-    esac
-}}
+source {dotactivator_script_path}
 #########################################################################
 """
             )
