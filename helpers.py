@@ -84,9 +84,7 @@ def user_input_confirmation(question: str, default: str = "yes") -> bool:
     # Initilize a yes/no value mapper
     valid = {"yes": True, "y": True, "ye": True, "no": False, "n": False}
 
-    if default is None:
-        prompt = " [y/n] "
-    elif default == "yes":
+    if default == "yes":
         prompt = " [Y/n] "
     elif default == "no":
         prompt = " [y/N] "
@@ -94,16 +92,13 @@ def user_input_confirmation(question: str, default: str = "yes") -> bool:
         raise ValueError("invalid default answer: '%s'" % default)
 
     while True:
-        sys.stdout.write(question + prompt)
-        choice = input().lower()
+        choice = input(question + prompt).strip().lower()
         if default is not None and choice == "":
             return valid[default]
         elif choice in valid:
             return valid[choice]
         else:
-            sys.stdout.write(
-                "Please respond with 'yes' or 'no' " "(or 'y' or 'n').\n"
-            )
+            print("Please respond with 'yes' or 'no' (or 'y' or 'n').")
 
 
 def pick_shell(stdscr, options: list, title: str):
