@@ -106,6 +106,40 @@ To update AutoActivator to the latest version, you can use the `autoactivator up
    autoactivator update
    ```
 
+## Removing AutoActivator
+
+To remove AutoActivator from your system, you can delete the cloned repository and remove the configuration from your shell configuration file. Follow the steps below:
+
+```bash
+# Delete the cloned repository
+rm -rf ~/.autoactivator
+```
+
+Next, remove the configuration from your shell configuration file, it would typically be in `~/.bashrc` for Bash and `~/.zshrc` for Zsh. Open the file in a text editor and delete the following lines:
+
+```bash
+############################# AutoActivator #############################
+source /home/user/.autoactivator/autoactivator_config.sh
+#########################################################################
+```
+
+Optionally, you can get back your original shell configuration file by restoring it from the created backup file (`~/.zshrc.pre-autoactivator` or `~/.bashrc.pre-autoactivator`). To do this, run the following command:
+
+```bash
+# For Zsh
+mv ~/.zshrc.pre-autoactivator ~/.zshrc
+
+# For Bash
+mv ~/.bashrc.pre-autoactivator ~/.bashrc
+```
+
+Finally, restart your terminal or source your shell configuration file:
+
+```bash
+source ~/.bashrc   # for Bash
+source ~/.zshrc    # for Zsh
+```
+
 ## Contributing
 
 Contributions are always welcome!
