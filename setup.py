@@ -1,9 +1,8 @@
 import os
-from typing import List
 from setuptools import find_packages, setup
 
 
-def _parse_requirements(path: str) -> List[str]:
+def _parse_requirements(path: str) -> list[str]:
     """Returns content of given requirements file."""
     with open(os.path.join(path)) as f:
         return [
