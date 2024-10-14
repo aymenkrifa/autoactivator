@@ -3,7 +3,6 @@ import sys
 import shutil
 import argparse
 import subprocess
-from typing import List
 from pathlib import Path
 
 
@@ -46,7 +45,7 @@ def is_shell_installed(shell_name: str) -> bool:
         return False
 
 
-def is_system_compatible(possible_os_list: List[str]) -> bool:
+def is_system_compatible(possible_os_list: list[str]) -> bool:
     """
     Check if the user's operating system is compatible with the
     covered OS list for the project.
