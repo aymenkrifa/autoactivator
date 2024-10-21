@@ -3,16 +3,17 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 RESET='\033[0m'
 
+
 # Enable nullglob option for ZSH to support search
+# without getting an error if no hidden folder was found
 if [[ $(ps -p $$ -ocomm=) == *zsh* ]]; then
   setopt nullglob
 fi
 
-# Cache for virtual environment paths
-declare -A VENV_CACHE
-
 _check_for_venv() {
+  # Check if there's an active virtualenv and exit if found
   if [[ "$VIRTUAL_ENV" ]]; then
+    # If we're changing out of the main directory, deactivate the virtualenv
     if [[ "$PWD" != "${VIRTUAL_ENV%/}"* ]]; then
       if command -v deactivate &> /dev/null; then
         deactivate
@@ -22,20 +23,16 @@ _check_for_venv() {
     fi
   fi
 
+  # Traverse up the directory tree until a virtualenv is found, or until we reach the root directory
   dir=$PWD
   while [[ "$dir" != "/" ]]; do
-    if [[ -n "${VENV_CACHE[$dir]}" ]]; then
-      source "${VENV_CACHE[$dir]}/bin/activate"
-      export VENV_ORIGINAL_DIR="$PWD"
-      return
-    fi
-
+    # Check if there are any virtual environment directories present
     if [[ $(find "$dir" -maxdepth 1 -type d | wc -l) -gt 1 ]]; then
       for venv_dir in "$dir"/* "$dir"/.*; do
         if [[ -d "$venv_dir" && -e "$venv_dir/bin/activate" && ! -e "$venv_dir/bin/conda" ]]; then
+          # Virtualenv found, activate it and record the original directory
           source "$venv_dir/bin/activate"
           export VENV_ORIGINAL_DIR="$PWD"
-          VENV_CACHE[$dir]="$venv_dir"
           return
         fi
       done
@@ -44,9 +41,13 @@ _check_for_venv() {
   done
 }
 
+
+
+# Define a function to be called whenever the current directory changes
 _chpwd() {
   _check_for_venv
 
+  # If we're changing back to the original directory, reactivate the virtualenv
   if [[ "$VIRTUAL_ENV" && "$PWD" == "${VENV_ORIGINAL_DIR%/}"* ]]; then
     if [[ ! -e "$VIRTUAL_ENV/bin/activate" ]]; then
       echo -e "${YELLOW}WARNING: Virtual environment activation failed. It appears that the virtual environment has been moved or deleted.${RESET}"
@@ -57,8 +58,10 @@ _chpwd() {
   fi
 }
 
+# Call the function once at startup to ensure the correct virtualenv is active
 _check_for_venv
 
+# Set the chpwd hook to call _chpwd whenever the current directory changes
 if [[ -n "$ZSH_VERSION" ]]; then
   autoload -Uz add-zsh-hook
   add-zsh-hook chpwd _chpwd
