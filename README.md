@@ -1,5 +1,7 @@
 # AutoActivator
 
+![Cover image representing AutoActivator, a tool for managing virtual environments](logo.png)
+
 ![Workflow](https://github.com/aymenkrifa/autoactivator/actions/workflows/ci.yml/badge.svg)
 [![Supported Python version](https://img.shields.io/badge/python-3.9|3.10|3.11|3.12-blue?logo=python)](https://docs.python.org/3.10/)
 [![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
