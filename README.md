@@ -1,4 +1,4 @@
-# AutoActivator
+# AutoActivator - Manage your Python Virtual Environments Effortlessly
 
 ![Cover image representing AutoActivator, a tool for managing virtual environments](logo.png)
 
