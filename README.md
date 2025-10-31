@@ -3,7 +3,7 @@
 ![Cover image representing AutoActivator, a tool for managing virtual environments](logo.png)
 
 ![Workflow](https://github.com/aymenkrifa/autoactivator/actions/workflows/ci.yml/badge.svg)
-[![Supported Python version](https://img.shields.io/badge/python-3.10|3.11|3.12-3.13-blue?logo=python)](https://docs.python.org/3.10/)
+[![Supported Python version](https://img.shields.io/badge/python-3.10|3.11|3.12|3.13-blue?logo=python)](https://docs.python.org/3.10/)
 [![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
