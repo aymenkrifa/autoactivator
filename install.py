@@ -1,8 +1,8 @@
-import os
-import sys
-import shutil
 import argparse
+import os
+import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -61,8 +61,7 @@ def is_system_compatible(possible_os_list: list[str]) -> bool:
         Whether the system is compatible or not
     """
     return any(
-        os_value.lower() in sys.platform.lower()
-        for os_value in possible_os_list
+        os_value.lower() in sys.platform.lower() for os_value in possible_os_list
     )
 
 
@@ -81,9 +80,7 @@ def backup_shell_config(shell_name: str):
             HOME_FOLDER, f"{SHELL_CONFIGS[shell_name]}.pre-{APP_NAME.lower()}"
         )
         shutil.copyfile(config_file, backup_file)
-        print(
-            f"Created a backup of {SHELL_CONFIGS[shell_name]} at {backup_file}"
-        )
+        print(f"Created a backup of {SHELL_CONFIGS[shell_name]} at {backup_file}")
 
 
 parser = argparse.ArgumentParser(
@@ -93,8 +90,7 @@ parser = argparse.ArgumentParser(
         "based on project directories."
     ),
     epilog=(
-        "Please restart the terminal after installation for the changes "
-        "to take effect."
+        "Please restart the terminal after installation for the changes to take effect."
     ),
 )
 
@@ -124,9 +120,7 @@ for chosen_shell in chosen_shells:
     backup_shell_config(chosen_shell)
 
     # Get the path to the activator script and the config file
-    dotactivator_script_path = os.path.join(
-        TARGET_FOLDER, "autoactivator_config.sh"
-    )
+    dotactivator_script_path = os.path.join(TARGET_FOLDER, "autoactivator_config.sh")
 
     config_file = os.path.join(HOME_FOLDER, SHELL_CONFIGS[chosen_shell])
 
@@ -144,10 +138,7 @@ for chosen_shell in chosen_shells:
 
     with open(config_file, "r+") as f:
         content = f.read()
-        if (
-            f"source {dotactivator_script_path}" in content
-            and APP_NAME in content
-        ):
+        if f"source {dotactivator_script_path}" in content and APP_NAME in content:
             print(f"Activator script is already sourced in {config_file}")
         else:
             f.write(

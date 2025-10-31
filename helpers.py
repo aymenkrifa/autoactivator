@@ -1,6 +1,6 @@
-import sys
 import curses
 import subprocess
+import sys
 
 
 def is_shell_installed(shell_name: str) -> bool:
@@ -47,8 +47,7 @@ def is_system_compatible(possible_os_list: list[str]) -> bool:
         Whether the system is compatible or not
     """
     return any(
-        os_value.lower() in sys.platform.lower()
-        for os_value in possible_os_list
+        os_value.lower() in sys.platform.lower() for os_value in possible_os_list
     )
 
 
