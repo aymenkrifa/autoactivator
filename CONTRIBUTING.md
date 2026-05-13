@@ -1,54 +1,41 @@
 # Contributing Guidelines
 
-Thank you for your interest in contributing to the AutoActivator project! We welcome all contributions and appreciate your help in making our project better.
-
-Please take a moment to review these guidelines before getting started.
+Thanks for your interest in contributing to AutoActivator. This is a small project — three shell scripts and a README — so the contribution process is intentionally lightweight.
 
 ## Code of Conduct
 
-Please note that this project adheres to the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/2/0/code_of_conduct.html). By participating in this project, you are expected to uphold this code. Please report any unacceptable behavior to the project maintainers.
+This project follows the [Contributor Covenant](https://www.contributor-covenant.org/version/2/0/code_of_conduct.html). Please report unacceptable behavior to the maintainer.
 
 ## Getting Started
 
-Before you begin contributing, please do the following:
+1. Fork the repository and clone your fork.
+2. Create a branch with a descriptive name (e.g. `fix/zsh-hook-leak`, `feature/pyenv-support`).
+3. Make your changes.
+4. Push and open a pull request against `main`.
 
-1. Fork the repository and clone it to your local machine
-2. Install any dependencies by running `pip install -r requirements.txt`
-3. Create a new branch for your changes with a descriptive name (e.g., `feature/add-new-command`)
-4. Make your changes and test them thoroughly
+There are no project dependencies to install — the codebase is just shell scripts. To exercise your changes locally, `source ./activator.sh` in a test shell and cd around.
 
-## How to Contribute
+## Bug Reports and Feature Requests
 
-We welcome contributions in the form of bug reports, feature requests, and pull requests. Please follow these guidelines when contributing:
+Open a GitHub issue. Search existing issues first to avoid duplicates. Include reproduction steps for bugs and the use case for feature requests.
 
-### Bug Reports
+## Code Style
 
-If you encounter a bug, please follow these steps to report it:
+Shell scripts in this repo are linted in CI with `shellcheck` at warning severity and checked with `bash -n` for syntax. See [`.github/workflows/ci.yml`](.github/workflows/ci.yml) for the exact commands. Run them locally before opening a PR:
 
-1. Check the existing issues to see if the bug has already been reported.
-2. If the bug has not been reported, create a new issue with a descriptive title and a detailed description of the problem.
-3. Include any relevant screenshots or error messages.
+```bash
+shellcheck --severity=warning setup.sh
+shellcheck --shell=bash --severity=warning activator.sh
+shellcheck --shell=bash --severity=warning autoactivator_config.sh
+bash -n setup.sh activator.sh autoactivator_config.sh
+```
 
-### Feature Requests
+`activator.sh` is sourced by both `bash` and `zsh`, so any zsh-specific syntax must be guarded by `[[ -n "$ZSH_VERSION" ]]` and any bash-specific syntax by `[[ -n "$BASH_VERSION" ]]`.
 
-If you have an idea for a new feature, please follow these steps:
+## Pull Requests
 
-1. Check the existing issues and pull requests to see if the feature has already been requested or implemented.
-2. If the feature has not been requested, create a new issue with a descriptive title and a detailed description of the feature.
-
-### Pull Requests
-
-If you would like to contribute code to the project, please follow these steps:
-
-1. Create a new branch for your changes with a descriptive name (e.g., `feature/add-new-command`).
-2. Make your changes and test them thoroughly.
-3. Create a pull request with a descriptive title and a detailed description of your changes.
-4. Wait for your pull request to be reviewed and merged.
-
-## Code Standards
-
-Please follow the [PEP 8](https://www.python.org/dev/peps/pep-0008/) style guide when writing code for this project. Additionally, please include docstrings and unit tests for all new code.
+Keep PRs focused on a single change. Describe the motivation in the PR body. If the change affects runtime behavior (activation, deactivation, hook registration), explain how you tested it across both shells.
 
 ## Contact
 
-If you have any questions or concerns about contributing to this project, please contact the maintainers at [aymenkrifa@gmail.com](mailto:aymenkrifa@gmail.com).
+For questions, email the maintainer at [aymenkrifa@gmail.com](mailto:aymenkrifa@gmail.com).

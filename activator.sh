@@ -1,7 +1,3 @@
-# ANSI color codes
-YELLOW='\033[1;33m'
-RESET='\033[0m'
-
 # Upper bound for the directory walk. Users can override before sourcing.
 : "${AUTOACTIVATOR_BOUNDARY:=$HOME}"
 

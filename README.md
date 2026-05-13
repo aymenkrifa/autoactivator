@@ -3,7 +3,6 @@
 ![Cover image representing AutoActivator, a tool for managing virtual environments](logo.png)
 
 ![Workflow](https://github.com/aymenkrifa/autoactivator/actions/workflows/ci.yml/badge.svg)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Autoactivator is a powerful tool designed to streamline your workflow when working with virtual environments. With Autoactivator, you can easily activate your virtual environments as soon as you enter a corresponding project directory, and stay activated for as long as you're working in that directory. Once you're done with the project and move out of the directory, Autoactivator automatically deactivates the virtual environment for you, ensuring that you don't accidentally use the wrong environment in future projects. This feature makes it easier for developers and programmers to manage multiple virtual environments without having to manually activate or deactivate them every time they switch projects.
