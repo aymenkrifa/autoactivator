@@ -85,6 +85,28 @@ AutoActivator looks for any directory inside your project that contains `bin/act
 
 It does **not** detect venvs stored outside the project tree (e.g. pyenv global envs, hatch envs in `~/.local`).
 
+### Multiple venvs in one project
+
+If a directory contains more than one venv, AutoActivator picks the first match in this priority order:
+
+1. `$AUTOACTIVATOR_VENV_NAME` (if set and the directory exists)
+2. `.venv`
+3. `venv`
+4. `env`
+5. `virtualenv`
+6. First directory in the tree that looks like a venv (alphabetical fallback)
+
+### Customisation
+
+Set `AUTOACTIVATOR_VENV_NAME` to prefer a non-standard venv name. Add the export to your shell config **before** the AutoActivator block:
+
+```bash
+export AUTOACTIVATOR_VENV_NAME=myenv
+source ~/.autoactivator/autoactivator_config.sh
+```
+
+If the named directory doesn't exist in a given project, AutoActivator falls back to the standard priority list — so the override is a preference, not a hard requirement.
+
 ## Uninstalling
 
 ```bash

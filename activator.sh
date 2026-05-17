@@ -16,11 +16,35 @@ elif ((${BASH_VERSINFO[0]:-0} >= 4)); then
   declare -gA _AUTOACTIVATOR_CACHE
 fi
 
+_autoactivator_is_venv() {
+  [[ -d "$1" && -e "$1/bin/activate" && ! -e "$1/bin/conda" ]]
+}
+
 _autoactivator_find_venv_in_dir() {
   local d="$1"
-  local candidate
+  local candidate name
+
+  # 1. Explicit override (user preference).
+  if [[ -n "$AUTOACTIVATOR_VENV_NAME" ]]; then
+    candidate="$d/$AUTOACTIVATOR_VENV_NAME"
+    if _autoactivator_is_venv "$candidate"; then
+      printf '%s' "$candidate"
+      return 0
+    fi
+  fi
+
+  # 2. Conventional names, in priority order.
+  for name in .venv venv env virtualenv; do
+    candidate="$d/$name"
+    if _autoactivator_is_venv "$candidate"; then
+      printf '%s' "$candidate"
+      return 0
+    fi
+  done
+
+  # 3. Fallback: first directory in the tree that looks like a venv.
   for candidate in "$d"/* "$d"/.*; do
-    if [[ -d "$candidate" && -e "$candidate/bin/activate" && ! -e "$candidate/bin/conda" ]]; then
+    if _autoactivator_is_venv "$candidate"; then
       printf '%s' "$candidate"
       return 0
     fi
