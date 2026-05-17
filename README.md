@@ -15,7 +15,7 @@ Results are cached per directory, so repeated visits cost nothing. The hook fire
 
 **Performance (Ubuntu 24.04):**
 
-| Shell | Before | After |
+| Shell | v0.1.0 | v0.2.0 |
 |---|---|---|
 | zsh | 2.14s | 0.031s |
 | bash | 1.93s | 0.002s |
