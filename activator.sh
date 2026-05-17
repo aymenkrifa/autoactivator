@@ -1,13 +1,6 @@
 # Upper bound for the directory walk. Users can override before sourcing.
 : "${AUTOACTIVATOR_BOUNDARY:=$HOME}"
 
-# Make empty globs vanish (both shells)
-if [[ -n "$ZSH_VERSION" ]]; then
-  setopt nullglob
-elif [[ -n "$BASH_VERSION" ]]; then
-  shopt -s nullglob
-fi
-
 # Per-shell memo: $PWD -> venv path (empty string = "walked, no venv").
 # Missing key = "not yet walked".
 if [[ -n "$ZSH_VERSION" ]]; then
@@ -43,12 +36,30 @@ _autoactivator_find_venv_in_dir() {
   done
 
   # 3. Fallback: first directory in the tree that looks like a venv.
-  for candidate in "$d"/* "$d"/.*; do
-    if _autoactivator_is_venv "$candidate"; then
-      printf '%s' "$candidate"
-      return 0
-    fi
-  done
+  #    The activator is sourced into the user's shell, so we must NOT
+  #    leak nullglob globally. Scope it: zsh has `setopt localoptions`;
+  #    bash needs manual save/restore.
+  if [[ -n "$ZSH_VERSION" ]]; then
+    setopt localoptions nullglob
+    for candidate in "$d"/* "$d"/.*; do
+      if _autoactivator_is_venv "$candidate"; then
+        printf '%s' "$candidate"
+        return 0
+      fi
+    done
+  else
+    local _had_nullglob=0
+    shopt -q nullglob && _had_nullglob=1
+    shopt -s nullglob
+    for candidate in "$d"/* "$d"/.*; do
+      if _autoactivator_is_venv "$candidate"; then
+        ((_had_nullglob)) || shopt -u nullglob
+        printf '%s' "$candidate"
+        return 0
+      fi
+    done
+    ((_had_nullglob)) || shopt -u nullglob
+  fi
   return 1
 }
 
