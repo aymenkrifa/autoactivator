@@ -46,12 +46,11 @@ autoactivator_update() {
         return 0
     fi
 
-    _autoactivator_msg 1 "updated ${before:0:7} -> ${after:0:7}"
-    git -C "$autoactivator_folder" log --oneline "$before..$after" | sed 's/^/  /'
+    _autoactivator_msg 1 "updated to the latest version."
 
     # shellcheck source=activator.sh disable=SC1091
     source "$activator_path"
-    _autoactivator_msg 1 "activator.sh re-sourced. Restart your terminal if autoactivator_config.sh changed."
+    _autoactivator_msg 1 "activator reloaded. Restart your terminal if shell config changed."
 }
 
 autoactivator() {
