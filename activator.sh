@@ -119,7 +119,6 @@ _check_for_venv
 # Register the cd hook idempotently.
 if [[ -n "$ZSH_VERSION" ]]; then
   autoload -Uz add-zsh-hook
-  add-zsh-hook -d chpwd _chpwd 2>/dev/null
   add-zsh-hook chpwd _check_for_venv
 elif [[ -n "$BASH_VERSION" ]]; then
   if [[ "$PROMPT_COMMAND" != *"_autoactivator_bash_chpwd"* ]]; then
