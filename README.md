@@ -73,17 +73,26 @@ autoactivator update
 
 This pulls the latest changes and re-sources the hook in your current shell. The update will refuse to run if you have local modifications in `~/.autoactivator`.
 
-## What gets detected
+## Tool support
 
-AutoActivator looks for any directory inside your project that contains `bin/activate` and is not a conda environment. This covers venvs created by:
+AutoActivator finds venvs that live **inside the project tree**. Here's how that maps to the common Python tools:
 
-- `python -m venv`
-- `virtualenv`
-- `uv venv`
-- `poetry` (when the venv is inside the project)
-- `pipenv` (when `PIPENV_VENV_IN_PROJECT=1`)
+| Tool | Default layout | Supported |
+|---|---|:---:|
+| `python -m venv` | `.venv` / `venv` / `env` in project | ✅ |
+| `virtualenv` | `env` in project | ✅ |
+| `uv venv` | `.venv` in project | ✅ |
+| `pyenv` + `python -m venv` | venv in project | ✅ |
+| `poetry` (with `virtualenvs.in-project = true`) | `.venv` in project | ✅ |
+| `pipenv` (with `PIPENV_VENV_IN_PROJECT=1`) | `.venv` in project | ✅ |
+| Custom-named directory in project | any name (set `$AUTOACTIVATOR_VENV_NAME`) | ✅ |
+| `poetry` (default) | `~/.cache/pypoetry/virtualenvs/…` | ❌ |
+| `pipenv` (default) | `~/.local/share/virtualenvs/…` | ❌ |
+| `pyenv-virtualenv` plugin | `~/.pyenv/versions/…` | ❌ |
+| `hatch` | `~/.local/share/hatch/…` | ❌ |
+| Conda / Anaconda / Miniconda | `$CONDA_PREFIX/envs/…` | ❌ (use `conda activate`) |
 
-It does **not** detect venvs stored outside the project tree (e.g. pyenv global envs, hatch envs in `~/.local`).
+The rule of thumb: **if the venv directory lives anywhere inside your project, AutoActivator will find it.** External venv layouts (poetry default, pyenv-virtualenv, hatch) are out of scope for now.
 
 ### Multiple venvs in one project
 
