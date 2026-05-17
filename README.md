@@ -24,7 +24,7 @@ Results are cached per directory, so repeated visits cost nothing. The hook fire
 
 - **bash** or **zsh**
 - **git** — used for installation and updates
-- Linux or macOS
+- Linux
 
 No Python required.
 
@@ -117,7 +117,7 @@ Then remove the AutoActivator block from your shell config (`~/.bashrc` or `~/.z
 
 ```bash
 ############################# AutoActivator #############################
-source /home/user/.autoactivator/autoactivator_config.sh
+source ~/.autoactivator/autoactivator_config.sh
 #########################################################################
 ```
 
