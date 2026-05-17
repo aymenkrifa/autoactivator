@@ -23,3 +23,12 @@ jobs:
           shellcheck --severity=warning setup.sh
           shellcheck --shell=bash --severity=warning activator.sh
           shellcheck --shell=bash --severity=warning autoactivator_config.sh
+
+      - name: Install zsh
+        run: sudo apt-get install -y --no-install-recommends zsh
+
+      - name: Tests (bash)
+        run: bash tests/test_activator.sh
+
+      - name: Tests (zsh)
+        run: zsh tests/test_activator.sh

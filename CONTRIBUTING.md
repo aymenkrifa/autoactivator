@@ -32,6 +32,19 @@ bash -n setup.sh activator.sh autoactivator_config.sh
 
 `activator.sh` is sourced by both `bash` and `zsh`, so any zsh-specific syntax must be guarded by `[[ -n "$ZSH_VERSION" ]]` and any bash-specific syntax by `[[ -n "$BASH_VERSION" ]]`.
 
+## Tests
+
+The repo has a black-box test suite for `activator.sh` in [`tests/test_activator.sh`](tests/test_activator.sh). It builds a fake project tree in a temp directory, sources `activator.sh`, and asserts behavior by invoking `_check_for_venv` directly. No Python or external test framework required.
+
+Run it under both shells before opening a PR:
+
+```bash
+bash tests/test_activator.sh
+zsh  tests/test_activator.sh
+```
+
+CI runs both invocations on every push and pull request.
+
 ## Pull Requests
 
 Keep PRs focused on a single change. Describe the motivation in the PR body. If the change affects runtime behavior (activation, deactivation, hook registration), explain how you tested it across both shells.
