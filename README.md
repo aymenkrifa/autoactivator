@@ -26,7 +26,7 @@ Results are cached per directory, so repeated visits cost nothing. The hook fire
 - **git** — used for installation and updates
 - Linux
 
-No Python required. *(Plot twist: a Python tool that doesn't need Python.)*
+No Python required. *(Plot twist: a Python tool that doesn't need Python.)* 🤷
 
 ## Installation
 
