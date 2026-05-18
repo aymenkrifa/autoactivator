@@ -1,7 +1,5 @@
 # AutoActivator
 
-![Cover image representing AutoActivator, a tool for managing virtual environments](logo.png)
-
 ![Workflow](https://github.com/aymenkrifa/autoactivator/actions/workflows/ci.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
