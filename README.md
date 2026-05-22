@@ -15,8 +15,10 @@ Results are cached per directory, so repeated visits cost nothing. The hook fire
 
 | Shell | v0.1.0 | v0.2.0 |
 |---|---|---|
-| zsh | 2.14s | 0.031s |
-| bash | 1.93s | 0.002s |
+| zsh | 2.14s | 0.004s |
+| bash | 1.93s | 0.004s |
+
+*Measured as wall-clock time for the hook to fire on a single `cd` into a project with a `.venv`, cold cache. Reproduce with [`bench/bench.sh`](bench/bench.sh).*
 
 ## Requirements
 
