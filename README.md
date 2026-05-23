@@ -119,10 +119,30 @@ If the named directory doesn't exist in a given project, AutoActivator falls bac
 ## Uninstalling
 
 ```bash
-rm -rf ~/.autoactivator
+autoactivator uninstall
 ```
 
-Then remove the AutoActivator block from your shell config (`~/.bashrc` or `~/.zshrc`):
+This removes the `############################# AutoActivator #############################` block (and the matching close marker) from `~/.bashrc` and `~/.zshrc`. Everything else in those files is left alone, and a fresh timestamped backup is written beside each rc (`~/.bashrc.pre-uninstall.<timestamp>`) before any change. Open a new shell to fully unload the hook.
+
+The repo at `~/.autoactivator` is **not** deleted by default — the command prints the `rm -rf` line for you to run. To wipe everything in one go:
+
+```bash
+autoactivator uninstall --purge
+```
+
+<details>
+<summary>About the <code>~/.zshrc.pre-autoactivator</code> backup</summary>
+
+The installer creates `~/.zshrc.pre-autoactivator` (or `.bashrc.pre-autoactivator`) the first time it runs. That file is a **snapshot from install time**, not a diff. Restoring it (`mv ~/.zshrc.pre-autoactivator ~/.zshrc`) will erase anything else you've added to your shell config since installing AutoActivator — aliases, other tools' init blocks, `PATH` edits, all of it. Only use it as a fallback if you're sure nothing else has changed.
+
+`autoactivator uninstall` avoids this entirely by deleting just the AutoActivator block in place.
+
+</details>
+
+<details>
+<summary>Manual removal</summary>
+
+If for some reason you can't run the command, delete this block from `~/.bashrc` / `~/.zshrc`:
 
 ```bash
 ############################# AutoActivator #############################
@@ -130,12 +150,9 @@ source ~/.autoactivator/autoactivator_config.sh
 #########################################################################
 ```
 
-To restore your original shell config from the backup created at install time:
+Then `rm -rf ~/.autoactivator` if you want the repo gone too.
 
-```bash
-mv ~/.zshrc.pre-autoactivator ~/.zshrc    # zsh
-mv ~/.bashrc.pre-autoactivator ~/.bashrc  # bash
-```
+</details>
 
 ## Contributing
 

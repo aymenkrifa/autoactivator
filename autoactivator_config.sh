@@ -40,6 +40,75 @@ _autoactivator_cache_count() {
     fi
 }
 
+# Strip the AutoActivator block(s) from $1 (an rc file) by matching the
+# install-time markers, leaving everything else untouched. A timestamped
+# backup is written beside the file before any modification.
+#
+# Prints one outcome line. Returns 0 on success (including "no block found"),
+# 1 if the block is malformed (open marker without close) or a write fails.
+_autoactivator_strip_block() {
+    local rc="$1"
+    [ -f "$rc" ] || { printf '  skipped %s (not found)\n' "$rc"; return 0; }
+
+    # First pass: count blocks and detect a missing close marker, without
+    # touching the file.
+    local removed=0 broken=0
+    read -r removed broken < <(awk '
+        BEGIN { skip = 0; removed = 0 }
+        {
+            if (skip) {
+                if (/^#+$/) { skip = 0; removed++ }
+                next
+            }
+            if (/^#+[[:space:]]+AutoActivator[[:space:]]+#+$/) { skip = 1; next }
+        }
+        END { print removed, (skip ? 1 : 0) }
+    ' "$rc")
+
+    if (( broken )); then
+        printf '  refused %s (open marker without matching close — edit manually)\n' "$rc"
+        return 1
+    fi
+
+    if (( removed == 0 )); then
+        printf '  no block found in %s\n' "$rc"
+        return 0
+    fi
+
+    # Backup, then rewrite via temp file and atomic move.
+    local stamp backup tmp
+    stamp=$(date +%Y%m%d-%H%M%S)
+    backup="${rc}.pre-uninstall.${stamp}"
+    cp -p "$rc" "$backup" || { _autoactivator_msg 2 "could not back up $rc"; return 1; }
+
+    tmp=$(mktemp "${rc}.XXXXXX") || { _autoactivator_msg 2 "could not create temp file beside $rc"; return 1; }
+    awk '
+        BEGIN { skip = 0; held = 0 }
+        {
+            if (skip) {
+                if (/^#+$/) skip = 0
+                next
+            }
+            if (/^#+[[:space:]]+AutoActivator[[:space:]]+#+$/) {
+                skip = 1
+                held = 0   # also drop the blank line the installer added above the block
+                next
+            }
+            if (held) { print held_line; held = 0 }
+            if ($0 == "") { held = 1; held_line = $0; next }
+            print
+        }
+        END { if (held) print held_line }
+    ' "$rc" > "$tmp" || { rm -f "$tmp"; _autoactivator_msg 2 "awk failed on $rc"; return 1; }
+
+    chmod --reference="$rc" "$tmp" 2>/dev/null
+    mv "$tmp" "$rc" || { _autoactivator_msg 2 "could not write $rc"; return 1; }
+
+    printf '  removed %d block(s) from %s\n' "$removed" "$rc"
+    printf '            backup: %s\n' "$backup"
+    return 0
+}
+
 # ---------------------------------------------------------------------------
 # Subcommands
 #
@@ -55,11 +124,13 @@ AutoActivator — auto-activate Python venvs on cd
 Usage: autoactivator <command>
 
 Commands:
-  status     Show current activation state and configuration
-  doctor     Diagnose installation health
-  version    Show installed version
-  update     Pull the latest version
-  help       Show this help
+  status               Show current activation state and configuration
+  doctor               Diagnose installation health
+  version              Show installed version
+  update               Pull the latest version
+  uninstall [--purge]  Remove the AutoActivator block from your shell rc.
+                       With --purge, also delete ~/.autoactivator.
+  help                 Show this help
 EOF
 }
 
@@ -188,6 +259,52 @@ _autoactivator_cmd_doctor() {
     fi
 }
 
+_autoactivator_cmd_uninstall() {
+    local purge=0
+    case "$1" in
+        "")      ;;
+        --purge) purge=1 ;;
+        *)       _autoactivator_msg 2 "unknown flag: $1 (try --purge)"; return 1 ;;
+    esac
+
+    _autoactivator_msg 1 "uninstall"
+    printf '\n'
+
+    local rcs=() rc any_failed=0
+    for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
+        [ -f "$rc" ] && rcs+=("$rc")
+    done
+
+    if (( ${#rcs[@]} == 0 )); then
+        printf '  no rc files found at ~/.bashrc or ~/.zshrc\n'
+    else
+        for rc in "${rcs[@]}"; do
+            _autoactivator_strip_block "$rc" || any_failed=1
+        done
+    fi
+
+    printf '\n'
+    if (( purge )); then
+        if [ -d "$autoactivator_folder" ]; then
+            if rm -rf "$autoactivator_folder"; then
+                printf '  deleted %s\n' "$autoactivator_folder"
+            else
+                printf '  could NOT delete %s\n' "$autoactivator_folder"
+                any_failed=1
+            fi
+        else
+            printf '  nothing to delete at %s\n' "$autoactivator_folder"
+        fi
+    else
+        printf '  repo left at %s\n' "$autoactivator_folder"
+        printf '            delete with: rm -rf %s\n' "$autoactivator_folder"
+    fi
+
+    printf '\n'
+    printf '  open a new shell to fully unload AutoActivator.\n'
+    return $any_failed
+}
+
 _autoactivator_cmd_update() {
     if [ ! -d "$autoactivator_folder/.git" ]; then
         _autoactivator_msg 2 "not a git checkout at $autoactivator_folder — cannot update."
@@ -237,6 +354,7 @@ autoactivator() {
         doctor)             _autoactivator_cmd_doctor ;;
         version|--version)  _autoactivator_cmd_version ;;
         update)             _autoactivator_cmd_update ;;
+        uninstall)          shift; _autoactivator_cmd_uninstall "$@" ;;
         *)
             _autoactivator_msg 2 "unknown command: $1"
             _autoactivator_msg 2 "run \`autoactivator help\` for usage."
