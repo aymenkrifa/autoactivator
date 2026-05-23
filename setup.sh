@@ -43,6 +43,11 @@ fi
 CONFIG_PATH="$TARGET_DIR/autoactivator_config.sh"
 [ -f "$CONFIG_PATH" ] || die "Expected $CONFIG_PATH after clone but it's missing."
 
+CONSTANTS_PATH="$TARGET_DIR/_constants.sh"
+[ -f "$CONSTANTS_PATH" ] || die "Expected $CONSTANTS_PATH after clone but it's missing."
+# shellcheck source=_constants.sh disable=SC1091
+. "$CONSTANTS_PATH"
+
 installed=()
 for shell in "$@"; do
   if ! command -v "$shell" >/dev/null 2>&1; then
@@ -62,14 +67,14 @@ for shell in "$@"; do
     echo "Created backup: $backup"
   fi
 
-  if grep -qF "source $CONFIG_PATH" "$rc" && grep -qF "$APP_NAME" "$rc"; then
+  if grep -qF "$AUTOACTIVATOR_BLOCK_OPEN" "$rc"; then
     echo "$APP_NAME already sourced in $rc"
   else
     cat >> "$rc" <<EOF
 
-############################# $APP_NAME #############################
+$AUTOACTIVATOR_BLOCK_OPEN
 source $CONFIG_PATH
-#########################################################################
+$AUTOACTIVATOR_BLOCK_CLOSE
 EOF
     echo "$APP_NAME sourced in $rc"
   fi

@@ -1,6 +1,17 @@
 APP_NAME="AutoActivator"
 autoactivator_folder="$HOME/.autoactivator"
 activator_path="$autoactivator_folder/activator.sh"
+constants_path="$autoactivator_folder/_constants.sh"
+
+# Shared marker constants. _constants.sh is canonical; the bake-in fallbacks
+# below cover the upgrade case where an older install has updated this file
+# but not yet pulled _constants.sh.
+if [ -f "$constants_path" ]; then
+    # shellcheck source=_constants.sh disable=SC1091
+    . "$constants_path"
+fi
+: "${AUTOACTIVATOR_BLOCK_OPEN:=############################# AutoActivator #############################}"
+: "${AUTOACTIVATOR_BLOCK_CLOSE:=#########################################################################}"
 
 _autoactivator_msg() {
     # $1 = stream (1=stdout, 2=stderr), rest = message
@@ -53,14 +64,14 @@ _autoactivator_strip_block() {
     # First pass: count blocks and detect a missing close marker, without
     # touching the file.
     local removed=0 broken=0
-    read -r removed broken < <(awk '
+    read -r removed broken < <(awk -v b_open="$AUTOACTIVATOR_BLOCK_OPEN" -v b_close="$AUTOACTIVATOR_BLOCK_CLOSE" '
         BEGIN { skip = 0; removed = 0 }
         {
             if (skip) {
-                if (/^#+$/) { skip = 0; removed++ }
+                if ($0 == b_close) { skip = 0; removed++ }
                 next
             }
-            if (/^#+[[:space:]]+AutoActivator[[:space:]]+#+$/) { skip = 1; next }
+            if ($0 == b_open) { skip = 1; next }
         }
         END { print removed, (skip ? 1 : 0) }
     ' "$rc")
@@ -82,14 +93,14 @@ _autoactivator_strip_block() {
     cp -p "$rc" "$backup" || { _autoactivator_msg 2 "could not back up $rc"; return 1; }
 
     tmp=$(mktemp "${rc}.XXXXXX") || { _autoactivator_msg 2 "could not create temp file beside $rc"; return 1; }
-    awk '
+    awk -v b_open="$AUTOACTIVATOR_BLOCK_OPEN" -v b_close="$AUTOACTIVATOR_BLOCK_CLOSE" '
         BEGIN { skip = 0; held = 0 }
         {
             if (skip) {
-                if (/^#+$/) skip = 0
+                if ($0 == b_close) skip = 0
                 next
             }
-            if (/^#+[[:space:]]+AutoActivator[[:space:]]+#+$/) {
+            if ($0 == b_open) {
                 skip = 1
                 held = 0   # also drop the blank line the installer added above the block
                 next
@@ -215,7 +226,7 @@ _autoactivator_cmd_doctor() {
     fi
 
     # 3. Activator block referenced from the shell rc.
-    if [ -n "$rc" ] && [ -f "$rc" ] && grep -q "autoactivator_config.sh" "$rc" 2>/dev/null; then
+    if [ -n "$rc" ] && [ -f "$rc" ] && grep -qF "$AUTOACTIVATOR_BLOCK_OPEN" "$rc" 2>/dev/null; then
         _autoactivator_check ok "activator block found in $rc"
     elif [ -n "$rc" ]; then
         _autoactivator_check fail "activator block NOT found in $rc"
