@@ -24,7 +24,7 @@ Results are cached per directory, so repeated visits cost nothing. The hook fire
 
 - **bash** or **zsh**
 - **git** — used for installation and updates
-- Linux
+- Linux. macOS isn't covered by CI, but the install path is the same and it should work — reports welcome.
 
 No Python required. *(Plot twist: a Python tool that doesn't need Python.)* 🤷
 
