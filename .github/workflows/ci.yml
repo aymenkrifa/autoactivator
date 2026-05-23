@@ -27,8 +27,14 @@ jobs:
       - name: Install zsh
         run: sudo apt-get install -y --no-install-recommends zsh
 
-      - name: Tests (bash)
+      - name: Activator tests (bash)
         run: bash tests/test_activator.sh
 
-      - name: Tests (zsh)
+      - name: Activator tests (zsh)
         run: zsh tests/test_activator.sh
+
+      - name: Subcommand tests (bash)
+        run: bash tests/test_subcommands.sh
+
+      - name: Subcommand tests (zsh)
+        run: zsh tests/test_subcommands.sh
