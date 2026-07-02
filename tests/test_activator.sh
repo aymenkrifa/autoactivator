@@ -230,6 +230,14 @@ _check_for_venv
 assert_eq "parent not matched via dot-glob" "$VIRTUAL_ENV" ""
 AUTOACTIVATOR_BOUNDARY="$FIXTURE_ROOT"
 
+# 17. A manually activated venv (not set by AutoActivator) is respected
+reset_state
+export VIRTUAL_ENV="/manually/chosen/venv"
+cd "$FIXTURE_ROOT/projA"
+_check_for_venv
+assert_eq "manual activation respected"  "$VIRTUAL_ENV" "/manually/chosen/venv"
+unset VIRTUAL_ENV
+
 # --- Summary ------------------------------------------------------------------
 
 echo

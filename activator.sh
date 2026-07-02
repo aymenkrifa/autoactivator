@@ -75,6 +75,12 @@ _autoactivator_find_venv_in_dir() {
 }
 
 _check_for_venv() {
+  # A venv the user activated by hand (VIRTUAL_ENV set, but not by us) is
+  # never touched; autoactivation resumes once they deactivate.
+  if [[ -n "$VIRTUAL_ENV" && -z "$VENV_ORIGINAL_DIR" ]]; then
+    return
+  fi
+
   # If autoactivator has an active venv, decide whether we left its project tree.
   if [[ -n "$VIRTUAL_ENV" && -n "$VENV_ORIGINAL_DIR" ]]; then
     if [[ "$PWD" == "$VENV_ORIGINAL_DIR" || "$PWD" == "${VENV_ORIGINAL_DIR%/}"/* ]]; then
