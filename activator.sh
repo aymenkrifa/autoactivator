@@ -20,15 +20,18 @@ _autoactivator_is_venv() {
   [[ -d "$1" && -e "$1/bin/activate" && ! -e "$1/bin/conda" ]]
 }
 
+# Result is handed back in _AUTOACTIVATOR_FOUND rather than on stdout: a
+# command substitution would fork once per directory level on every cd.
 _autoactivator_find_venv_in_dir() {
   local d="$1"
   local candidate name
+  _AUTOACTIVATOR_FOUND=""
 
   # 1. Explicit override (user preference).
   if [[ -n "$AUTOACTIVATOR_VENV_NAME" ]]; then
     candidate="$d/$AUTOACTIVATOR_VENV_NAME"
     if _autoactivator_is_venv "$candidate"; then
-      printf '%s' "$candidate"
+      _AUTOACTIVATOR_FOUND="$candidate"
       return 0
     fi
   fi
@@ -37,7 +40,7 @@ _autoactivator_find_venv_in_dir() {
   for name in .venv venv env virtualenv; do
     candidate="$d/$name"
     if _autoactivator_is_venv "$candidate"; then
-      printf '%s' "$candidate"
+      _AUTOACTIVATOR_FOUND="$candidate"
       return 0
     fi
   done
@@ -53,7 +56,7 @@ _autoactivator_find_venv_in_dir() {
     for candidate in "$d"/* "$d"/.*; do
       case "${candidate##*/}" in .|..) continue ;; esac
       if _autoactivator_is_venv "$candidate"; then
-        printf '%s' "$candidate"
+        _AUTOACTIVATOR_FOUND="$candidate"
         return 0
       fi
     done
@@ -65,7 +68,7 @@ _autoactivator_find_venv_in_dir() {
       case "${candidate##*/}" in .|..) continue ;; esac
       if _autoactivator_is_venv "$candidate"; then
         ((_had_nullglob)) || shopt -u nullglob
-        printf '%s' "$candidate"
+        _AUTOACTIVATOR_FOUND="$candidate"
         return 0
       fi
     done
@@ -108,7 +111,8 @@ _check_for_venv() {
   local dir="$PWD"
   local found=""
   while :; do
-    if found=$(_autoactivator_find_venv_in_dir "$dir"); then
+    if _autoactivator_find_venv_in_dir "$dir"; then
+      found="$_AUTOACTIVATOR_FOUND"
       break
     fi
     if [[ "$dir" == "$AUTOACTIVATOR_BOUNDARY" || "$dir" == "/" ]]; then
