@@ -5,5 +5,6 @@
 # Editing the marker strings here changes them in lockstep across
 # install, doctor, and uninstall.
 
+# shellcheck disable=SC2034  # consumed by the files that source this one
 AUTOACTIVATOR_BLOCK_OPEN="############################# AutoActivator #############################"
 AUTOACTIVATOR_BLOCK_CLOSE="#########################################################################"

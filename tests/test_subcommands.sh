@@ -6,6 +6,9 @@
 #
 # Exits 0 if all tests pass, 1 otherwise.
 
+# shellcheck disable=SC2164  # a failed fixture cd surfaces in the assertions
+# shellcheck disable=SC2154  # block markers come from the sourced config
+
 if [[ -n "$BASH_VERSION" ]]; then
   SHELL_NAME="bash"
 elif [[ -n "$ZSH_VERSION" ]]; then

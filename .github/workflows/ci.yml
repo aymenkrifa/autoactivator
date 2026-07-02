@@ -12,20 +12,36 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Syntax check
+      - name: Install zsh
+        run: sudo apt-get install -y --no-install-recommends zsh
+
+      - name: Syntax check (bash)
         run: |
           bash -n setup.sh
           bash -n activator.sh
           bash -n autoactivator_config.sh
+          bash -n _constants.sh
+          bash -n tests/test_activator.sh
+          bash -n tests/test_subcommands.sh
+          bash -n bench/bench.sh
+
+      - name: Syntax check (zsh)
+        run: |
+          zsh -n activator.sh
+          zsh -n autoactivator_config.sh
+          zsh -n _constants.sh
+          zsh -n tests/test_activator.sh
+          zsh -n tests/test_subcommands.sh
+          zsh -n bench/bench.sh
 
       - name: shellcheck
         run: |
-          shellcheck --severity=warning setup.sh
+          shellcheck --severity=warning setup.sh bench/bench.sh
           shellcheck --shell=bash --severity=warning activator.sh
           shellcheck --shell=bash --severity=warning autoactivator_config.sh
-
-      - name: Install zsh
-        run: sudo apt-get install -y --no-install-recommends zsh
+          shellcheck --shell=bash --severity=warning _constants.sh
+          shellcheck --shell=bash --severity=warning tests/test_activator.sh
+          shellcheck --shell=bash --severity=warning tests/test_subcommands.sh
 
       - name: Activator tests (bash)
         run: bash tests/test_activator.sh
@@ -35,6 +51,25 @@ jobs:
 
       - name: Subcommand tests (bash)
         run: bash tests/test_subcommands.sh
+
+      - name: Subcommand tests (zsh)
+        run: zsh tests/test_subcommands.sh
+
+  test-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # /bin/bash is pinned so the suite runs on the system bash 3.2 —
+      # the no-associative-array code path — not a newer Homebrew bash.
+      - name: Activator tests (system bash 3.2)
+        run: /bin/bash tests/test_activator.sh
+
+      - name: Activator tests (zsh)
+        run: zsh tests/test_activator.sh
+
+      - name: Subcommand tests (system bash 3.2)
+        run: /bin/bash tests/test_subcommands.sh
 
       - name: Subcommand tests (zsh)
         run: zsh tests/test_subcommands.sh

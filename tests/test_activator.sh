@@ -6,6 +6,9 @@
 #
 # Exits 0 if all tests pass, 1 otherwise.
 
+# shellcheck disable=SC2164  # a failed fixture cd surfaces in the assertions
+# shellcheck disable=SC2154  # VIRTUAL_ENV etc. are set by the sourced activator
+
 if [[ -n "$BASH_VERSION" ]]; then
   SHELL_NAME="bash"
 elif [[ -n "$ZSH_VERSION" ]]; then
