@@ -73,7 +73,7 @@ for shell in "$@"; do
     cat >> "$rc" <<EOF
 
 $AUTOACTIVATOR_BLOCK_OPEN
-source $CONFIG_PATH
+source "$CONFIG_PATH"
 $AUTOACTIVATOR_BLOCK_CLOSE
 EOF
     echo "$APP_NAME sourced in $rc"
