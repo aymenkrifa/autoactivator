@@ -21,29 +21,32 @@ Open a GitHub issue. Search existing issues first to avoid duplicates. Include r
 
 ## Code Style
 
-Shell scripts in this repo are linted in CI with `shellcheck` at warning severity and checked with `bash -n` for syntax. See [`.github/workflows/ci.yml`](.github/workflows/ci.yml) for the exact commands. Run them locally before opening a PR:
+Shell scripts in this repo — including the tests and the benchmark — are linted in CI with `shellcheck` at warning severity and syntax-checked with `bash -n` and `zsh -n`. See [`.github/workflows/ci.yml`](.github/workflows/ci.yml) for the exact commands. Run them locally before opening a PR:
 
 ```bash
-shellcheck --severity=warning setup.sh
-shellcheck --shell=bash --severity=warning activator.sh
-shellcheck --shell=bash --severity=warning autoactivator_config.sh
-bash -n setup.sh activator.sh autoactivator_config.sh
+shellcheck --severity=warning setup.sh bench/bench.sh
+shellcheck --shell=bash --severity=warning activator.sh autoactivator_config.sh _constants.sh tests/*.sh
+bash -n setup.sh activator.sh autoactivator_config.sh _constants.sh tests/*.sh bench/bench.sh
+zsh -n activator.sh autoactivator_config.sh _constants.sh tests/*.sh bench/bench.sh
 ```
 
 `activator.sh` is sourced by both `bash` and `zsh`, so any zsh-specific syntax must be guarded by `[[ -n "$ZSH_VERSION" ]]` and any bash-specific syntax by `[[ -n "$BASH_VERSION" ]]`.
 
 ## Tests
 
-The repo has a black-box test suite for `activator.sh` in [`tests/test_activator.sh`](tests/test_activator.sh). It builds a fake project tree in a temp directory, sources `activator.sh`, and asserts behavior by invoking `_check_for_venv` directly. No Python or external test framework required.
+The repo has two black-box test suites, neither of which needs Python or an external test framework:
 
-Run it under both shells before opening a PR:
+- [`tests/test_activator.sh`](tests/test_activator.sh) builds a fake project tree in a temp directory, sources `activator.sh`, and asserts behavior by invoking `_check_for_venv` directly.
+- [`tests/test_subcommands.sh`](tests/test_subcommands.sh) sources the full config under a throwaway `$HOME` and exercises the `autoactivator` subcommands.
+
+Run both under both shells before opening a PR:
 
 ```bash
-bash tests/test_activator.sh
-zsh  tests/test_activator.sh
+bash tests/test_activator.sh   && zsh tests/test_activator.sh
+bash tests/test_subcommands.sh && zsh tests/test_subcommands.sh
 ```
 
-CI runs both invocations on every push and pull request.
+CI runs all of these on every push and pull request, on Linux and on macOS (where the system bash 3.2 exercises the cacheless code path).
 
 ## Pull Requests
 

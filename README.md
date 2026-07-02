@@ -9,22 +9,25 @@ Automatically activate your Python virtual environment when you `cd` into a proj
 
 When you change directories, AutoActivator scans the current directory (and up to your home directory) for a virtual environment. If it finds one, it activates it. When you leave the project tree, it deactivates it.
 
-Results are cached per directory, so repeated visits cost nothing. The hook fires only on actual directory changes — not on every shell prompt.
+Found venvs are cached per directory, so repeated visits cost nothing. Directories without a venv are re-checked on each visit, so a venv you create later is picked up immediately. The hook fires only on actual directory changes — not on every shell prompt.
+
+If you activate a venv by hand, AutoActivator leaves it alone — no automatic switching happens until you `deactivate`.
 
 **Performance (Ubuntu 24.04):**
 
-| Shell | v0.1.0 | v0.2.0 |
-|---|---|---|
-| zsh | 2.14s | 0.004s |
-| bash | 1.93s | 0.004s |
+| Shell | v0.1.0 | v0.2.0 | current (main) |
+|---|---|---|---|
+| zsh | 2.14s | 0.004s | 0.0002s |
+| bash | 1.93s | 0.004s | 0.0002s |
+| *speedup vs previous* | — | *~500×* | *~20×* |
 
-*Measured as wall-clock time for the hook to fire on a single `cd` into a project with a `.venv`, cold cache. Reproduce with [`bench/bench.sh`](bench/bench.sh).*
+*Measured as wall-clock time for the hook to fire on a single `cd` into a project with a `.venv`, cold cache, in an `ubuntu:24.04` container. Reproduce with [`bench/bench.sh`](bench/bench.sh).*
 
 ## Requirements
 
 - **bash** or **zsh**
 - **git** — used for installation and updates
-- Linux. macOS isn't covered by CI, but the install path is the same and it should work — reports welcome.
+- Linux or macOS (both covered by CI, including macOS's stock bash 3.2)
 
 No Python required. *(Plot twist: a Python tool that doesn't need Python.)* 🤷
 
@@ -146,13 +149,17 @@ If for some reason you can't run the command, delete this block from `~/.bashrc`
 
 ```bash
 ############################# AutoActivator #############################
-source ~/.autoactivator/autoactivator_config.sh
+source "/home/<you>/.autoactivator/autoactivator_config.sh"
 #########################################################################
 ```
 
 Then `rm -rf ~/.autoactivator` if you want the repo gone too.
 
 </details>
+
+## Security note
+
+Activating a venv means `source`-ing its `bin/activate` — so cd-ing into an untrusted checkout executes whatever shell code its venv-shaped directories contain. If you routinely clone code you don't trust, inspect it before cd-ing in. (Tools like direnv address this with a per-directory allow-list; AutoActivator deliberately stays zero-config.)
 
 ## Contributing
 
