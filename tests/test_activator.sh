@@ -84,6 +84,12 @@ cd "$FIXTURE_ROOT/outside"
 # shellcheck disable=SC1091
 source "$REPO_ROOT/activator.sh"
 
+# True when this shell has the associative-array cache (zsh, or bash >= 4 —
+# macOS ships bash 3.2, where the activator runs cacheless).
+have_cache() {
+  [[ -n "$ZSH_VERSION" ]] || ((${BASH_VERSINFO[0]:-0} >= 4))
+}
+
 reset_state() {
   if command -v deactivate >/dev/null 2>&1; then
     deactivate
@@ -91,7 +97,7 @@ reset_state() {
   unset VIRTUAL_ENV VENV_ORIGINAL_DIR AUTOACTIVATOR_VENV_NAME
   if [[ -n "$ZSH_VERSION" ]]; then
     _AUTOACTIVATOR_CACHE=()
-  elif [[ -n "$BASH_VERSION" ]]; then
+  elif have_cache; then
     unset _AUTOACTIVATOR_CACHE
     declare -gA _AUTOACTIVATOR_CACHE
   fi
@@ -181,6 +187,33 @@ if [[ -n "$ZSH_VERSION" ]]; then
 elif [[ -n "$BASH_VERSION" ]]; then
   count=$(grep -o '_autoactivator_bash_chpwd' <<<"$PROMPT_COMMAND" | wc -l)
   assert_eq "bash hook registered once"  "$count" "1"
+fi
+
+# 13. Cache is populated after an activation (zsh and bash >= 4)
+reset_state
+if have_cache; then
+  cd "$FIXTURE_ROOT/projA"
+  _check_for_venv
+  assert_eq "cache populated on activation" "${#_AUTOACTIVATOR_CACHE[@]}" "1"
+fi
+
+# 14. A venv created after a directory was first visited is picked up
+reset_state
+mkdir -p "$FIXTURE_ROOT/projLate"
+cd "$FIXTURE_ROOT/projLate"
+_check_for_venv
+make_activate "$FIXTURE_ROOT/projLate/.venv"
+cd "$FIXTURE_ROOT/outside"; _check_for_venv
+cd "$FIXTURE_ROOT/projLate"; _check_for_venv
+assert_eq "venv created after first visit" "$VIRTUAL_ENV" "$FIXTURE_ROOT/projLate/.venv"
+
+# 15. A stale cache entry (venv gone) falls back to the walk on the same cd
+reset_state
+if have_cache; then
+  _AUTOACTIVATOR_CACHE[$FIXTURE_ROOT/projA]="$FIXTURE_ROOT/gone-venv"
+  cd "$FIXTURE_ROOT/projA"
+  _check_for_venv
+  assert_eq "stale cache entry recovers"   "$VIRTUAL_ENV" "$FIXTURE_ROOT/projA/.venv"
 fi
 
 # --- Summary ------------------------------------------------------------------

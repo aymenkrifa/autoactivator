@@ -1,12 +1,19 @@
 # Upper bound for the directory walk. Users can override before sourcing.
 : "${AUTOACTIVATOR_BOUNDARY:=$HOME}"
 
-# Per-shell memo: $PWD -> venv path (empty string = "walked, no venv").
-# Missing key = "not yet walked".
+# Per-shell memo: $PWD -> venv path. Only successful finds are cached, so a
+# venv created after a directory was first visited is still picked up.
+# The sentinel exists because bash expands ${_AUTOACTIVATOR_CACHE+set} as
+# "is element [0] set", which is never true for an associative array used
+# as a path map — testing the array directly would disable the cache.
 if [[ -n "$ZSH_VERSION" ]]; then
   typeset -gA _AUTOACTIVATOR_CACHE
+  _AUTOACTIVATOR_HAVE_CACHE=1
 elif ((${BASH_VERSINFO[0]:-0} >= 4)); then
   declare -gA _AUTOACTIVATOR_CACHE
+  _AUTOACTIVATOR_HAVE_CACHE=1
+else
+  _AUTOACTIVATOR_HAVE_CACHE=0
 fi
 
 _autoactivator_is_venv() {
@@ -75,18 +82,16 @@ _check_for_venv() {
     unset VENV_ORIGINAL_DIR
   fi
 
-  # Cache lookup
-  if [[ -n "${_AUTOACTIVATOR_CACHE+set}" && -n "${_AUTOACTIVATOR_CACHE[$PWD]+set}" ]]; then
+  # Cache lookup. A stale entry (venv deleted since it was cached) is
+  # dropped and falls through to the walk, so the same cd still recovers.
+  if (( _AUTOACTIVATOR_HAVE_CACHE )) && [[ -n "${_AUTOACTIVATOR_CACHE[$PWD]+set}" ]]; then
     local cached="${_AUTOACTIVATOR_CACHE[$PWD]}"
-    if [[ -n "$cached" ]]; then
-      if [[ -e "$cached/bin/activate" ]]; then
-        source "$cached/bin/activate"
-        export VENV_ORIGINAL_DIR="$PWD"
-      else
-        unset "_AUTOACTIVATOR_CACHE[$PWD]"
-      fi
+    if [[ -n "$cached" && -e "$cached/bin/activate" ]]; then
+      source "$cached/bin/activate"
+      export VENV_ORIGINAL_DIR="$PWD"
+      return
     fi
-    return
+    unset "_AUTOACTIVATOR_CACHE[$PWD]"
   fi
 
   # Walk up, bounded.
@@ -105,11 +110,10 @@ _check_for_venv() {
     dir="$parent"
   done
 
-  if [[ -n "${_AUTOACTIVATOR_CACHE+set}" ]]; then
-    _AUTOACTIVATOR_CACHE[$PWD]="$found"
-  fi
-
   if [[ -n "$found" ]]; then
+    if (( _AUTOACTIVATOR_HAVE_CACHE )); then
+      _AUTOACTIVATOR_CACHE[$PWD]="$found"
+    fi
     source "$found/bin/activate"
     export VENV_ORIGINAL_DIR="$PWD"
   fi
