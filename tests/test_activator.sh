@@ -188,7 +188,8 @@ if [[ -n "$ZSH_VERSION" ]]; then
   count=$(print -l ${chpwd_functions} | grep -c '^_check_for_venv$')
   assert_eq "zsh hook registered once"   "$count" "1"
 elif [[ -n "$BASH_VERSION" ]]; then
-  count=$(grep -o '_autoactivator_bash_chpwd' <<<"$PROMPT_COMMAND" | wc -l)
+  # grep -c, not `wc -l`: BSD/macOS wc pads the count with leading spaces.
+  count=$(grep -o '_autoactivator_bash_chpwd' <<<"$PROMPT_COMMAND" | grep -c .)
   assert_eq "bash hook registered once"  "$count" "1"
 fi
 
