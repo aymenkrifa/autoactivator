@@ -188,7 +188,7 @@ _autoactivator_cmd_status() {
     if [ -n "$AUTOACTIVATOR_VENV_NAME" ]; then
         printf '  Venv name:      %s (override)\n' "$AUTOACTIVATOR_VENV_NAME"
     else
-        printf '  Venv name:      .venv (default)\n'
+        printf '  Venv names:     .venv, venv, env, virtualenv (default priority)\n'
     fi
     printf '  Boundary:       %s\n' "${AUTOACTIVATOR_BOUNDARY:-$HOME}"
     printf '  Cache entries:  %s (this shell)\n' "$(_autoactivator_cache_count)"
@@ -352,9 +352,11 @@ _autoactivator_cmd_update() {
 
     _autoactivator_msg 1 "updated to the latest version."
 
-    # shellcheck source=activator.sh disable=SC1091
-    source "$_AUTOACTIVATOR_DIR/activator.sh"
-    _autoactivator_msg 1 "activator reloaded. Restart your terminal if shell config changed."
+    # Re-source the whole config (activator + subcommands); hook
+    # registration is idempotent, so this is safe to repeat.
+    # shellcheck source=autoactivator_config.sh disable=SC1091
+    source "$_AUTOACTIVATOR_DIR/autoactivator_config.sh"
+    _autoactivator_msg 1 "reloaded. Restart your terminal if shell config changed."
 }
 
 # ---------------------------------------------------------------------------
