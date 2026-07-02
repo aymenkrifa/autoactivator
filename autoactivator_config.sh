@@ -1,14 +1,15 @@
-APP_NAME="AutoActivator"
-autoactivator_folder="$HOME/.autoactivator"
-activator_path="$autoactivator_folder/activator.sh"
-constants_path="$autoactivator_folder/_constants.sh"
+# This file is sourced into every interactive shell, so everything it
+# defines at the top level must carry the _AUTOACTIVATOR_/_autoactivator_
+# prefix to stay out of the user's namespace.
+_AUTOACTIVATOR_APP_NAME="AutoActivator"
+_AUTOACTIVATOR_DIR="$HOME/.autoactivator"
 
 # Shared marker constants. _constants.sh is canonical; the bake-in fallbacks
 # below cover the upgrade case where an older install has updated this file
 # but not yet pulled _constants.sh.
-if [ -f "$constants_path" ]; then
+if [ -f "$_AUTOACTIVATOR_DIR/_constants.sh" ]; then
     # shellcheck source=_constants.sh disable=SC1091
-    . "$constants_path"
+    . "$_AUTOACTIVATOR_DIR/_constants.sh"
 fi
 : "${AUTOACTIVATOR_BLOCK_OPEN:=############################# AutoActivator #############################}"
 : "${AUTOACTIVATOR_BLOCK_CLOSE:=#########################################################################}"
@@ -16,14 +17,14 @@ fi
 _autoactivator_msg() {
     # $1 = stream (1=stdout, 2=stderr), rest = message
     local stream=$1; shift
-    printf '\033[1m%s\033[0m: %s\n' "$APP_NAME" "$*" >&"$stream"
+    printf '\033[1m%s\033[0m: %s\n' "$_AUTOACTIVATOR_APP_NAME" "$*" >&"$stream"
 }
 
-if [ -e "$activator_path" ]; then
+if [ -e "$_AUTOACTIVATOR_DIR/activator.sh" ]; then
     # shellcheck source=activator.sh disable=SC1091
-    source "$activator_path"
+    source "$_AUTOACTIVATOR_DIR/activator.sh"
 else
-    _autoactivator_msg 2 "activator script not found: $activator_path"
+    _autoactivator_msg 2 "activator script not found: $_AUTOACTIVATOR_DIR/activator.sh"
 fi
 
 # ---------------------------------------------------------------------------
@@ -148,17 +149,17 @@ EOF
 }
 
 _autoactivator_cmd_version() {
-    if [ ! -d "$autoactivator_folder/.git" ]; then
-        _autoactivator_msg 2 "not a git checkout at $autoactivator_folder."
+    if [ ! -d "$_AUTOACTIVATOR_DIR/.git" ]; then
+        _autoactivator_msg 2 "not a git checkout at $_AUTOACTIVATOR_DIR."
         return 1
     fi
 
     local sha tag
-    sha=$(git -C "$autoactivator_folder" rev-parse --short HEAD 2>/dev/null) || {
+    sha=$(git -C "$_AUTOACTIVATOR_DIR" rev-parse --short HEAD 2>/dev/null) || {
         _autoactivator_msg 2 "could not read git revision."
         return 1
     }
-    tag=$(git -C "$autoactivator_folder" describe --tags --abbrev=0 2>/dev/null)
+    tag=$(git -C "$_AUTOACTIVATOR_DIR" describe --tags --abbrev=0 2>/dev/null)
 
     if [ -n "$tag" ]; then
         _autoactivator_msg 1 "$tag ($sha)"
@@ -213,18 +214,18 @@ _autoactivator_cmd_doctor() {
     rc=$(_autoactivator_rc_path)
 
     # 1. Repo present.
-    if [ -d "$autoactivator_folder/.git" ]; then
-        _autoactivator_check ok "repo present at $autoactivator_folder"
+    if [ -d "$_AUTOACTIVATOR_DIR/.git" ]; then
+        _autoactivator_check ok "repo present at $_AUTOACTIVATOR_DIR"
 
         # 2. Branch + cleanliness (only meaningful when repo exists).
-        branch=$(git -C "$autoactivator_folder" rev-parse --abbrev-ref HEAD 2>/dev/null)
-        if git -C "$autoactivator_folder" diff --quiet HEAD 2>/dev/null; then
+        branch=$(git -C "$_AUTOACTIVATOR_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null)
+        if git -C "$_AUTOACTIVATOR_DIR" diff --quiet HEAD 2>/dev/null; then
             _autoactivator_check ok "on branch ${branch:-?}, clean working tree"
         else
-            _autoactivator_check warn "local modifications in $autoactivator_folder — \`update\` will refuse to run"
+            _autoactivator_check warn "local modifications in $_AUTOACTIVATOR_DIR — \`update\` will refuse to run"
         fi
     else
-        _autoactivator_check fail "repo NOT found at $autoactivator_folder"
+        _autoactivator_check fail "repo NOT found at $_AUTOACTIVATOR_DIR"
     fi
 
     # 3. Activator block referenced from the shell rc.
@@ -298,19 +299,19 @@ _autoactivator_cmd_uninstall() {
 
     printf '\n'
     if (( purge )); then
-        if [ -d "$autoactivator_folder" ]; then
-            if rm -rf "$autoactivator_folder"; then
-                printf '  deleted %s\n' "$autoactivator_folder"
+        if [ -d "$_AUTOACTIVATOR_DIR" ]; then
+            if rm -rf "$_AUTOACTIVATOR_DIR"; then
+                printf '  deleted %s\n' "$_AUTOACTIVATOR_DIR"
             else
-                printf '  could NOT delete %s\n' "$autoactivator_folder"
+                printf '  could NOT delete %s\n' "$_AUTOACTIVATOR_DIR"
                 any_failed=1
             fi
         else
-            printf '  nothing to delete at %s\n' "$autoactivator_folder"
+            printf '  nothing to delete at %s\n' "$_AUTOACTIVATOR_DIR"
         fi
     else
-        printf '  repo left at %s\n' "$autoactivator_folder"
-        printf '            delete with: rm -rf %s\n' "$autoactivator_folder"
+        printf '  repo left at %s\n' "$_AUTOACTIVATOR_DIR"
+        printf '            delete with: rm -rf %s\n' "$_AUTOACTIVATOR_DIR"
     fi
 
     printf '\n'
@@ -319,30 +320,30 @@ _autoactivator_cmd_uninstall() {
 }
 
 _autoactivator_cmd_update() {
-    if [ ! -d "$autoactivator_folder/.git" ]; then
-        _autoactivator_msg 2 "not a git checkout at $autoactivator_folder — cannot update."
+    if [ ! -d "$_AUTOACTIVATOR_DIR/.git" ]; then
+        _autoactivator_msg 2 "not a git checkout at $_AUTOACTIVATOR_DIR — cannot update."
         return 1
     fi
 
     # Refuse to clobber local edits silently.
-    if ! git -C "$autoactivator_folder" diff --quiet HEAD 2>/dev/null; then
-        _autoactivator_msg 2 "local modifications detected in $autoactivator_folder — refusing to update."
+    if ! git -C "$_AUTOACTIVATOR_DIR" diff --quiet HEAD 2>/dev/null; then
+        _autoactivator_msg 2 "local modifications detected in $_AUTOACTIVATOR_DIR — refusing to update."
         _autoactivator_msg 2 "stash or reset them, then retry."
         return 1
     fi
 
     local before after
-    before=$(git -C "$autoactivator_folder" rev-parse HEAD 2>/dev/null) || {
+    before=$(git -C "$_AUTOACTIVATOR_DIR" rev-parse HEAD 2>/dev/null) || {
         _autoactivator_msg 2 "could not read current HEAD."
         return 1
     }
 
-    if ! git -C "$autoactivator_folder" pull --ff-only --quiet origin main; then
+    if ! git -C "$_AUTOACTIVATOR_DIR" pull --ff-only --quiet origin main; then
         _autoactivator_msg 2 "update failed (pull was not a fast-forward, or network is down)."
         return 1
     fi
 
-    after=$(git -C "$autoactivator_folder" rev-parse HEAD)
+    after=$(git -C "$_AUTOACTIVATOR_DIR" rev-parse HEAD)
 
     if [ "$before" = "$after" ]; then
         _autoactivator_msg 1 "already up to date."
@@ -352,7 +353,7 @@ _autoactivator_cmd_update() {
     _autoactivator_msg 1 "updated to the latest version."
 
     # shellcheck source=activator.sh disable=SC1091
-    source "$activator_path"
+    source "$_AUTOACTIVATOR_DIR/activator.sh"
     _autoactivator_msg 1 "activator reloaded. Restart your terminal if shell config changed."
 }
 
