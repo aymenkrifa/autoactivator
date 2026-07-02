@@ -45,10 +45,13 @@ _autoactivator_find_venv_in_dir() {
   # 3. Fallback: first directory in the tree that looks like a venv.
   #    The activator is sourced into the user's shell, so we must NOT
   #    leak nullglob globally. Scope it: zsh has `setopt localoptions`;
-  #    bash needs manual save/restore.
+  #    bash needs manual save/restore. bash < 5.2 also globs "." and ".."
+  #    (no globskipdots), which would treat $d or its parent as the venv,
+  #    so both loops skip them by basename.
   if [[ -n "$ZSH_VERSION" ]]; then
     setopt localoptions nullglob
     for candidate in "$d"/* "$d"/.*; do
+      case "${candidate##*/}" in .|..) continue ;; esac
       if _autoactivator_is_venv "$candidate"; then
         printf '%s' "$candidate"
         return 0
@@ -59,6 +62,7 @@ _autoactivator_find_venv_in_dir() {
     shopt -q nullglob && _had_nullglob=1
     shopt -s nullglob
     for candidate in "$d"/* "$d"/.*; do
+      case "${candidate##*/}" in .|..) continue ;; esac
       if _autoactivator_is_venv "$candidate"; then
         ((_had_nullglob)) || shopt -u nullglob
         printf '%s' "$candidate"

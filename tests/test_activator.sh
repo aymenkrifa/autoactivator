@@ -216,6 +216,20 @@ if have_cache; then
   assert_eq "stale cache entry recovers"   "$VIRTUAL_ENV" "$FIXTURE_ROOT/projA/.venv"
 fi
 
+# 16. A directory whose PARENT is venv-shaped must not activate the parent
+#     (bash < 5.2 globs ".." in the fallback scan; boundary pinned to the
+#     subdir so the walk can never legitimately reach the parent level).
+#     Nested under dotglob/ so later walks that scan FIXTURE_ROOT's children
+#     can't stumble on the venv-shaped fixture.
+reset_state
+make_activate "$FIXTURE_ROOT/dotglob/fakevenv"
+mkdir -p "$FIXTURE_ROOT/dotglob/fakevenv/subdir"
+AUTOACTIVATOR_BOUNDARY="$FIXTURE_ROOT/dotglob/fakevenv/subdir"
+cd "$FIXTURE_ROOT/dotglob/fakevenv/subdir"
+_check_for_venv
+assert_eq "parent not matched via dot-glob" "$VIRTUAL_ENV" ""
+AUTOACTIVATOR_BOUNDARY="$FIXTURE_ROOT"
+
 # --- Summary ------------------------------------------------------------------
 
 echo
