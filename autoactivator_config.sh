@@ -112,8 +112,10 @@ _autoactivator_strip_block() {
         END { if (held) print held_line }
     ' "$rc" > "$tmp" || { rm -f "$tmp"; _autoactivator_msg 2 "awk failed on $rc"; return 1; }
 
-    chmod --reference="$rc" "$tmp" 2>/dev/null
-    mv "$tmp" "$rc" || { _autoactivator_msg 2 "could not write $rc"; return 1; }
+    # Overwrite in place (not mv): keeps the rc's existing permissions and
+    # ownership without GNU-only chmod --reference, so it works on macOS.
+    cp "$tmp" "$rc" || { rm -f "$tmp"; _autoactivator_msg 2 "could not write $rc"; return 1; }
+    rm -f "$tmp"
 
     printf '  removed %d block(s) from %s\n' "$removed" "$rc"
     printf '            backup: %s\n' "$backup"
