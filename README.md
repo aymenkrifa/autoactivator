@@ -34,20 +34,20 @@ No Python required. *(Plot twist: a Python tool that doesn't need Python.)* 🤷
 ## Installation
 
 ```bash
-curl -sSL https://aymenkrifa.github.io/autoactivator/setup.sh | bash -s <shell>
+curl -sSL https://raw.githubusercontent.com/aymenkrifa/autoactivator/main/setup.sh | bash -s <shell>
 ```
 
 Replace `<shell>` with `bash`, `zsh`, or both:
 
 ```bash
 # zsh only
-curl -sSL https://aymenkrifa.github.io/autoactivator/setup.sh | bash -s zsh
+curl -sSL https://raw.githubusercontent.com/aymenkrifa/autoactivator/main/setup.sh | bash -s zsh
 
 # bash only
-curl -sSL https://aymenkrifa.github.io/autoactivator/setup.sh | bash -s bash
+curl -sSL https://raw.githubusercontent.com/aymenkrifa/autoactivator/main/setup.sh | bash -s bash
 
 # both
-curl -sSL https://aymenkrifa.github.io/autoactivator/setup.sh | bash -s zsh bash
+curl -sSL https://raw.githubusercontent.com/aymenkrifa/autoactivator/main/setup.sh | bash -s zsh bash
 ```
 
 <details>
