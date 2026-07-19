@@ -1,3 +1,9 @@
+<div align="center">
+  <img src="docs/logo/assets/autoactivator-banner.png" alt="AutoActivator" width="640">
+  <p><em>A shell hook that activates your Python venv the moment you <code>cd</code> in — and deactivates it when you leave.</em></p>
+  <p><a href="https://autoactivator.aymenkrifa.com"><b>autoactivator.aymenkrifa.com</b></a></p>
+</div>
+
 # AutoActivator
 
 ![Workflow](https://github.com/aymenkrifa/autoactivator/actions/workflows/ci.yml/badge.svg)
@@ -34,20 +40,20 @@ No Python required. *(Plot twist: a Python tool that doesn't need Python.)* 🤷
 ## Installation
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/aymenkrifa/autoactivator/main/setup.sh | bash -s <shell>
+curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <shell>
 ```
 
 Replace `<shell>` with `bash`, `zsh`, or both:
 
 ```bash
 # zsh only
-curl -sSL https://raw.githubusercontent.com/aymenkrifa/autoactivator/main/setup.sh | bash -s zsh
+curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s zsh
 
 # bash only
-curl -sSL https://raw.githubusercontent.com/aymenkrifa/autoactivator/main/setup.sh | bash -s bash
+curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s bash
 
 # both
-curl -sSL https://raw.githubusercontent.com/aymenkrifa/autoactivator/main/setup.sh | bash -s zsh bash
+curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s zsh bash
 ```
 
 <details>

@@ -15,6 +15,9 @@ jobs:
       - name: Install zsh
         run: sudo apt-get install -y --no-install-recommends zsh
 
+      - name: Branded install copy (docs/setup.sh) is in sync
+        run: diff -q setup.sh docs/setup.sh
+
       - name: Syntax check (bash)
         run: |
           bash -n setup.sh
