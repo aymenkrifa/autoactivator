@@ -21,7 +21,7 @@ If you activate a venv by hand, AutoActivator leaves it alone — no automatic s
 
 **Performance (Ubuntu 24.04):**
 
-| Shell | v0.1.0 | v0.2.0 | current (main) |
+| Shell | v0.1.0 | v0.2.0 | v0.3.0 |
 |---|---|---|---|
 | zsh | 2.14s | 0.004s | 0.0002s |
 | bash | 1.93s | 0.004s | 0.0002s |
