@@ -25,6 +25,7 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
+  img{max-width:100%;height:auto}
   body{background:var(--ink);color:var(--text);font-family:var(--sans);line-height:1.6;
        background-image:radial-gradient(ellipse 900px 420px at 50% -80px, #1A2740 0%, var(--ink) 70%)}
   a{color:var(--blue)}
@@ -52,7 +53,8 @@
   .term-bar{display:flex;gap:8px;padding:13px 16px;border-bottom:1px solid var(--border)}
   .term-bar i{width:11px;height:11px;border-radius:50%;display:block}
   .term-bar i:nth-child(1){background:#FF5F57}.term-bar i:nth-child(2){background:#FEBC2E}.term-bar i:nth-child(3){background:#28C840}
-  .term-body{font-family:var(--mono);font-size:15px;padding:18px 20px 22px;min-height:96px}
+  .term-body{font-family:var(--mono);font-size:15px;padding:18px 20px 22px;min-height:96px;transition:opacity .35s}
+  .term-body.fade{opacity:0}
   .term-body .line{white-space:pre;margin:2px 0}
   .prompt{color:var(--blue)} .venv{color:var(--green)} .cmd{color:var(--text)} .dim{color:var(--muted)}
   .cursor{display:inline-block;width:9px;height:17px;background:var(--yellow);vertical-align:-3px;animation:blink 1.05s steps(1) infinite}
@@ -116,6 +118,28 @@
   footer{margin-top:70px;padding:28px 0 44px;border-top:1px solid var(--border);
          display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:14px}
   footer a{color:var(--muted)} footer a:hover{color:var(--text)}
+
+  /* small screens */
+  @media (max-width:600px){
+    .wrap{padding:0 18px}
+    header{padding:16px 0;justify-content:center}
+    section{padding:44px 0 8px}
+    .hero{padding:22px 0 12px}
+    .hero p.tag{font-size:15.5px}
+    .term{margin-top:26px}
+    .term-body{font-size:13.5px;min-height:84px}
+    .install code{font-size:12px;padding:11px 12px}
+    .install button{padding:0 14px}
+    table{font-size:13.5px}
+    th,td{padding:8px 10px}
+    pre{font-size:12.5px;padding:14px 14px}
+    footer{margin-top:48px}
+  }
+
+  /* large screens */
+  @media (min-width:1440px){
+    .wrap{max-width:1020px}
+  }
 </style>
 </head>
 <body>
@@ -248,15 +272,13 @@ autoactivator <span class="s">uninstall</span></pre>
 <script>
 (function(){
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var typed = document.getElementById('typed'),
+  var demo = document.getElementById('demo'),
+      typed = document.getElementById('typed'),
       c1 = document.getElementById('c1'),
       l2 = document.getElementById('l2'),
       l3 = document.getElementById('l3'),
       text = 'cd my-project';
-  function done(){ c1.style.display='none'; l2.style.visibility='visible';
-    setTimeout(function(){ l3.style.visibility='visible'; }, reduced?0:900); }
-  if(reduced){ typed.textContent = text; done(); }
-  else {
+  function type(){
     var i = 0;
     setTimeout(function tick(){
       typed.textContent = text.slice(0, ++i);
@@ -264,6 +286,27 @@ autoactivator <span class="s">uninstall</span></pre>
       else { setTimeout(done, 450); }
     }, 700);
   }
+  function done(){
+    c1.style.display='none'; l2.style.visibility='visible';
+    setTimeout(function(){
+      l3.style.visibility='visible';
+      setTimeout(reset, 3200);   // hold the finished scene, then replay
+    }, 900);
+  }
+  function reset(){
+    demo.classList.add('fade');
+    setTimeout(function(){
+      typed.textContent=''; c1.style.display='';
+      l2.style.visibility='hidden'; l3.style.visibility='hidden';
+      demo.classList.remove('fade');
+      type();
+    }, 380);
+  }
+  if(reduced){ // no animation, no loop: show the finished scene
+    typed.textContent = text; c1.style.display='none';
+    l2.style.visibility='visible'; l3.style.visibility='visible';
+  }
+  else { type(); }
 
   var shellarg = document.getElementById('shellarg');
   var tabs = document.querySelectorAll('.tabs button');
