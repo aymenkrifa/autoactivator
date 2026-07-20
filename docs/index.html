@@ -8,7 +8,10 @@
 <meta property="og:title" content="AutoActivator">
 <meta property="og:description" content="A shell hook that activates your Python venv the moment you cd in — and deactivates it when you leave.">
 <meta property="og:image" content="https://autoactivator.aymenkrifa.com/logo/assets/autoactivator-banner.png">
+<meta property="og:url" content="https://autoactivator.aymenkrifa.com/">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0F1724">
+<link rel="canonical" href="https://autoactivator.aymenkrifa.com/">
 <link rel="icon" type="image/png" sizes="32x32" href="logo/assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="logo/assets/favicon-16.png">
 <link rel="apple-touch-icon" href="logo/assets/favicon-180.png">
@@ -29,14 +32,15 @@
   .wrap{max-width:960px;margin:0 auto;padding:0 24px}
 
   /* header */
-  header{display:flex;align-items:center;justify-content:space-between;padding:22px 0}
+  header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 18px;padding:22px 0}
   .brand{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-weight:700;font-size:18px;color:var(--text);text-decoration:none}
   .brand img{width:34px;height:34px}
-  header nav a{font-family:var(--mono);font-size:14px;color:var(--muted);text-decoration:none;margin-left:22px}
+  header nav{display:flex;flex-wrap:wrap;gap:8px 22px}
+  header nav a{font-family:var(--mono);font-size:14px;color:var(--muted);text-decoration:none}
   header nav a:hover{color:var(--text)}
 
   /* hero */
-  .hero{padding:44px 0 20px;text-align:center}
+  .hero{padding:36px 0 20px;text-align:center}
   .hero h1{font-family:var(--mono);font-size:clamp(30px,5.4vw,52px);letter-spacing:-1px}
   .hero h1 .a{color:var(--text)} .hero h1 .b{color:var(--blue)}
   .hero p.tag{color:var(--muted);max-width:56ch;margin:14px auto 0;font-size:17px}
@@ -68,17 +72,26 @@
   .install button:hover{background:var(--border)}
 
   /* sections */
-  section{padding:64px 0 8px}
+  section{padding:64px 0 8px;scroll-margin-top:16px}
   h2{font-family:var(--mono);font-size:15px;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);margin-bottom:8px}
   h2::before{content:"❯ ";color:var(--blue)}
   .lede{color:var(--muted);max-width:64ch;margin-bottom:28px}
+  .lede b{color:var(--text)}
+  .lede.tight{margin-bottom:10px}
+  .lede.fine{font-size:13.5px;margin-bottom:0}
+  .lede.flush{margin-bottom:0}
   .lede code,p code,li code{font-family:var(--mono);font-size:.92em;color:var(--text);background:var(--panel-2);
         border:1px solid var(--border);border-radius:5px;padding:1px 6px}
 
   /* code blocks */
+  .codewrap{position:relative;margin:14px 0 26px}
+  .codewrap pre{margin:0}
   pre{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;
       font-family:var(--mono);font-size:13px;color:var(--muted);overflow-x:auto;margin:14px 0 26px}
   pre .k{color:var(--blue)} pre .s{color:var(--green)} pre .y{color:var(--yellow)} pre .c{color:var(--muted)}
+  .copybtn{position:absolute;top:9px;right:9px;font-family:var(--mono);font-size:12px;color:var(--muted);
+           background:var(--panel-2);border:1px solid var(--border);border-radius:6px;padding:3px 10px;cursor:pointer}
+  .copybtn:hover{color:var(--text);background:var(--border)}
 
   /* tables */
   .tablewrap{overflow-x:auto;margin:14px 0 26px}
@@ -118,7 +131,7 @@
     </nav>
   </header>
 
-  <section class="hero" style="padding-top:36px">
+  <section class="hero">
     <h1><span class="a">Auto</span><span class="b">Activator</span></h1>
     <p class="tag">A shell hook that activates your Python venv the moment you <code>cd</code> in — and deactivates it when you leave. No config, no aliases, no per-project setup.</p>
 
@@ -163,12 +176,12 @@
         </tbody>
       </table>
     </div>
-    <p class="lede" style="font-size:13.5px;margin-bottom:0">Wall-clock time for the hook to fire on a single <code>cd</code> into a project with a <code>.venv</code>, cold cache, in an <code>ubuntu:24.04</code> container. Reproduce with <a href="https://github.com/aymenkrifa/autoactivator/blob/main/bench/bench.sh">bench/bench.sh</a>.</p>
+    <p class="lede fine">Wall-clock time for the hook to fire on a single <code>cd</code> into a project with a <code>.venv</code>, cold cache, in an <code>ubuntu:24.04</code> container. Reproduce with <a href="https://github.com/aymenkrifa/autoactivator/blob/main/bench/bench.sh">bench/bench.sh</a>.</p>
   </section>
 
   <section id="install">
     <h2>Install</h2>
-    <p class="lede">You need <b style="color:var(--text)">bash</b> or <b style="color:var(--text)">zsh</b>, <b style="color:var(--text)">git</b>, and Linux or macOS — both covered by CI, including macOS's stock bash 3.2. No Python required. <em>(Plot twist: a Python tool that doesn't need Python.)</em></p>
+    <p class="lede">You need <b>bash</b> or <b>zsh</b>, <b>git</b>, and Linux or macOS — both covered by CI, including macOS's stock bash 3.2. No Python required. <em>(Plot twist: a Python tool that doesn't need Python.)</em></p>
 
 <pre><span class="c"># zsh only</span>
 curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <span class="y">zsh</span>
@@ -179,7 +192,7 @@ curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <span class="y
 <span class="c"># both</span>
 curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <span class="y">zsh bash</span></pre>
 
-    <p class="lede" style="margin-bottom:10px">Then restart your terminal, or <code>source ~/.zshrc</code> / <code>source ~/.bashrc</code>. Later on:</p>
+    <p class="lede tight">Then restart your terminal, or <code>source ~/.zshrc</code> / <code>source ~/.bashrc</code>. Later on:</p>
 
 <pre><span class="c"># pull the latest version and re-source the hook in your current shell</span>
 autoactivator <span class="s">update</span>
@@ -188,12 +201,12 @@ autoactivator <span class="s">update</span>
 <span class="c"># add --purge to also delete ~/.autoactivator</span>
 autoactivator <span class="s">uninstall</span></pre>
 
-    <p class="lede" style="font-size:13.5px;margin-bottom:0">Prefer to see what you're running first? <a href="https://github.com/aymenkrifa/autoactivator#installation">Manual installation</a> is three lines: clone, <code>chmod</code>, run.</p>
+    <p class="lede fine">Prefer to see what you're running first? <a href="https://github.com/aymenkrifa/autoactivator#installation">Manual installation</a> is three lines: clone, <code>chmod</code>, run.</p>
   </section>
 
   <section id="support">
     <h2>Tool support</h2>
-    <p class="lede">The rule of thumb: <b style="color:var(--text)">if the venv directory lives anywhere inside your project, AutoActivator will find it.</b> External venv layouts are out of scope for now.</p>
+    <p class="lede">The rule of thumb: <b>if the venv directory lives anywhere inside your project, AutoActivator will find it.</b> External venv layouts are out of scope for now.</p>
 
     <div class="tablewrap">
       <table>
@@ -213,22 +226,22 @@ autoactivator <span class="s">uninstall</span></pre>
     </div>
 
     <h3 class="sub">Multiple venvs in one project</h3>
-    <p class="lede" style="margin-bottom:10px">First match wins, in this order: <code>$AUTOACTIVATOR_VENV_NAME</code> → <code>.venv</code> → <code>venv</code> → <code>env</code> → <code>virtualenv</code> → first venv-looking directory (alphabetical).</p>
+    <p class="lede tight">First match wins, in this order: <code>$AUTOACTIVATOR_VENV_NAME</code> → <code>.venv</code> → <code>venv</code> → <code>env</code> → <code>virtualenv</code> → first venv-looking directory (alphabetical).</p>
 
     <h3 class="sub">Prefer a non-standard name?</h3>
 <pre><span class="c"># add before the AutoActivator block in your shell config</span>
 <span class="k">export</span> AUTOACTIVATOR_VENV_NAME=<span class="s">myenv</span></pre>
-    <p class="lede" style="font-size:13.5px;margin-bottom:0">If the named directory doesn't exist in a project, the standard priority list applies — the override is a preference, not a hard requirement.</p>
+    <p class="lede fine">If the named directory doesn't exist in a project, the standard priority list applies — the override is a preference, not a hard requirement.</p>
   </section>
 
   <section id="security">
     <h2>Security note</h2>
-    <p class="lede" style="margin-bottom:0">Activating a venv means <code>source</code>-ing its <code>bin/activate</code> — so cd-ing into an untrusted checkout executes whatever shell code its venv-shaped directories contain. If you routinely clone code you don't trust, inspect it before cd-ing in. (Tools like direnv address this with a per-directory allow-list; AutoActivator deliberately stays zero-config.)</p>
+    <p class="lede flush">Activating a venv means <code>source</code>-ing its <code>bin/activate</code> — so cd-ing into an untrusted checkout executes whatever shell code its venv-shaped directories contain. If you routinely clone code you don't trust, inspect it before cd-ing in. (Tools like direnv address this with a per-directory allow-list; AutoActivator deliberately stays zero-config.)</p>
   </section>
 
   <footer>
     <span><a href="https://github.com/aymenkrifa/autoactivator">Source on GitHub</a> · <a href="https://github.com/aymenkrifa/autoactivator/blob/main/LICENSE">MIT License</a> · Made by <a href="https://aymenkrifa.com">Aymen Krifa</a></span>
-    <span><a href="https://github.com/aymenkrifa/autoactivator/blob/main/CONTRIBUTING.md">contributing</a> · <a href="https://github.com/aymenkrifa/autoactivator/tree/main/docs/logo">brand assets</a></span>
+    <span><a href="https://github.com/aymenkrifa/autoactivator/blob/main/CONTRIBUTING.md">contributing</a></span>
   </footer>
 </div>
 
@@ -262,11 +275,28 @@ autoactivator <span class="s">uninstall</span></pre>
     });
   });
 
-  var btn = document.getElementById('copy');
-  btn.addEventListener('click', function(){
-    navigator.clipboard.writeText(document.getElementById('cmdline').textContent).then(function(){
-      btn.textContent = 'copied'; setTimeout(function(){ btn.textContent = 'copy'; }, 1400);
+  function wireCopy(btn, getText){
+    btn.addEventListener('click', function(){
+      navigator.clipboard.writeText(getText()).then(function(){
+        btn.textContent = 'copied'; setTimeout(function(){ btn.textContent = 'copy'; }, 1400);
+      });
     });
+  }
+
+  wireCopy(document.getElementById('copy'), function(){
+    return document.getElementById('cmdline').textContent;
+  });
+
+  // Every code block gets a copy button, pinned to the block's corner on a
+  // non-scrolling wrapper so it stays put while the code scrolls under it.
+  document.querySelectorAll('pre').forEach(function(pre){
+    var wrap = document.createElement('div'); wrap.className = 'codewrap';
+    pre.parentNode.insertBefore(wrap, pre); wrap.appendChild(pre);
+    var btn = document.createElement('button');
+    btn.className = 'copybtn'; btn.textContent = 'copy';
+    btn.setAttribute('aria-label', 'Copy code');
+    wireCopy(btn, function(){ return pre.innerText; });
+    wrap.appendChild(btn);
   });
 })();
 </script>
