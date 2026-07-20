@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/logo/assets/autoactivator-banner.png" alt="AutoActivator" width="640">
+  <img src="docs/logo/assets/autoactivator-banner-animated.svg" alt="AutoActivator" width="640">
   <p><em>A shell hook that activates your Python venv the moment you <code>cd</code> in — and deactivates it when you leave.</em></p>
   <p><a href="https://autoactivator.aymenkrifa.com"><b>autoactivator.aymenkrifa.com</b></a></p>
 </div>
