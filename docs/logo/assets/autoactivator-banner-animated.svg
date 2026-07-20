@@ -5,25 +5,29 @@
       <stop offset="0" stop-color="#4B8BBE"/>
       <stop offset="1" stop-color="#3776AB"/>
     </linearGradient>
-    <clipPath id="typeclip"><rect id="clipR" x="330" y="194" width="240" height="40"/></clipPath>
+    <clipPath id="typeclip"><rect id="clipR" x="331" y="194" width="236" height="40"/></clipPath>
   </defs>
   <style>
-    /* One 6.5s cycle: idle, type (13 steps), hold, venv line appears, hold, fade, replay.
-       Base attributes are the finished scene, so with animations off (reduced motion,
-       old renderers) this degrades to the static banner. */
+    /* One 6.5s cycle, all phases choreographed on the same clock:
+       0–8%   idle — cursor blinks twice at the prompt
+       8–30%  typing — solid cursor tracks the reveal, one step per character
+       41%    the (.venv) prompt appears, its cursor blinking
+       90–96% the whole scene fades out together, then the loop restarts
+       Base attributes are the finished scene, so with animations off
+       (reduced motion, old renderers) this is the static banner. */
+    #scene{animation:fade 6.5s infinite}
+    @keyframes fade{0%,90%{opacity:1}95.5%,100%{opacity:0}}
     #clipR{animation:type 6.5s infinite}
-    @keyframes type{0%{width:0}8%{width:0;animation-timing-function:steps(13,end)}30%{width:240}100%{width:240}}
-    #typed{animation:fadeout 6.5s infinite}
-    @keyframes fadeout{0%,91%{opacity:1}96%,100%{opacity:0}}
+    @keyframes type{0%,8%{transform:translateX(-236px);animation-timing-function:steps(13,end)}30%,100%{transform:translateX(0)}}
     #cur1{animation:cur1v 6.5s infinite}
-    @keyframes cur1v{0%,34%{opacity:1}35%,100%{opacity:0}}
-    #cur1r{animation:blink 1.05s steps(1) infinite,curx 6.5s infinite}
-    @keyframes curx{0%{transform:translateX(0)}8%{transform:translateX(0);animation-timing-function:steps(13,end)}30%{transform:translateX(240px)}100%{transform:translateX(240px)}}
+    @keyframes cur1v{0%,1.9%{opacity:1}2%,3.9%{opacity:0}4%,34%{opacity:1}35%,100%{opacity:0}}
+    #cur1r{animation:curx 6.5s infinite}
+    @keyframes curx{0%,8%{transform:translateX(0);animation-timing-function:steps(13,end)}30%,100%{transform:translateX(234px)}}
     #line2{animation:l2 6.5s infinite}
-    @keyframes l2{0%,40%{opacity:0}43%,91%{opacity:1}96%,100%{opacity:0}}
+    @keyframes l2{0%,40%{opacity:0}41%,100%{opacity:1}}
     #cur2r{animation:blink 1.05s steps(1) infinite}
     @keyframes blink{50%{opacity:0}}
-    @media (prefers-reduced-motion:reduce){#clipR,#typed,#cur1,#cur1r,#line2,#cur2r{animation:none}}
+    @media (prefers-reduced-motion:reduce){#scene,#clipR,#cur1,#cur1r,#line2,#cur2r{animation:none}}
   </style>
   <!-- terminal card -->
   <rect x="8" y="8" width="1264" height="304" rx="28" fill="#0F1724" stroke="#243248" stroke-width="2"/>
@@ -40,13 +44,14 @@
   </g>
   <!-- wordmark -->
   <text x="292" y="158" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="74" font-weight="bold" fill="#EDF2F9" textLength="577" lengthAdjust="spacingAndGlyphs">AutoActivator</text>
-  <!-- line 1: prompt, typed command, tracking cursor -->
-  <text x="296" y="224" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="30" fill="#4B8BBE">&#10095;</text>
-  <g id="typed"><text x="332" y="224" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="30" fill="#9FB0C3" textLength="234" lengthAdjust="spacingAndGlyphs" clip-path="url(#typeclip)">cd my-project</text></g>
-  <g id="cur1" opacity="0"><rect id="cur1r" x="332" y="200" width="16" height="30" fill="#FFD43B"/></g>
-  <!-- line 2: activated venv prompt with blinking cursor -->
-  <g id="line2">
-    <text x="296" y="272" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="30"><tspan fill="#34D399">(.venv)</tspan><tspan fill="#4B8BBE"> &#10095;</tspan></text>
-    <rect id="cur2r" x="472" y="248" width="16" height="30" fill="#FFD43B"/>
+  <!-- animated terminal scene -->
+  <g id="scene">
+    <text x="296" y="224" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="30" fill="#4B8BBE">&#10095;</text>
+    <text x="332" y="224" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="30" fill="#9FB0C3" textLength="234" lengthAdjust="spacingAndGlyphs" clip-path="url(#typeclip)">cd my-project</text>
+    <g id="cur1" opacity="0"><rect id="cur1r" x="332" y="200" width="16" height="30" fill="#FFD43B"/></g>
+    <g id="line2">
+      <text x="296" y="272" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="30"><tspan fill="#34D399">(.venv)</tspan><tspan fill="#4B8BBE"> &#10095;</tspan></text>
+      <rect id="cur2r" x="472" y="248" width="16" height="30" fill="#FFD43B"/>
+    </g>
   </g>
 </svg>
