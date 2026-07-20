@@ -82,8 +82,13 @@
   .lede.tight{margin-bottom:10px}
   .lede.fine{font-size:13.5px;margin-bottom:0}
   .lede.flush{margin-bottom:0}
-  .lede code,p code,li code{font-family:var(--mono);font-size:.92em;color:var(--text);background:var(--panel-2);
+  .lede code,p code,li code,.priority code{font-family:var(--mono);font-size:.92em;color:var(--text);background:var(--panel-2);
         border:1px solid var(--border);border-radius:5px;padding:1px 6px}
+
+  /* priority chain: full-width, wraps at chip boundaries */
+  .priority{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;
+            margin:0 0 26px;font-size:14.5px;color:var(--muted)}
+  .priority .arr{color:var(--blue);font-family:var(--mono)}
 
   /* code blocks */
   .codewrap{position:relative;margin:14px 0 26px;border:1px solid var(--border);border-radius:12px;background:var(--panel);overflow:hidden}
@@ -110,6 +115,7 @@
   td{color:var(--muted)}
   td code{white-space:nowrap}
   td.ok{color:var(--green)} td.no{color:#E06C75}
+  td.ok,td.no{font-family:var(--mono);font-size:16px;font-weight:700}
   td.num{font-family:var(--mono)}
   td .hl{color:var(--yellow);font-family:var(--mono)}
 
@@ -238,21 +244,29 @@
       <table>
         <thead><tr><th>Tool</th><th>Default layout</th><th>Supported</th></tr></thead>
         <tbody>
-          <tr><td><code>python -m venv</code></td><td><code>.venv</code> / <code>venv</code> / <code>env</code> in project</td><td class="ok">✅</td></tr>
-          <tr><td><code>virtualenv</code></td><td><code>env</code> in project</td><td class="ok">✅</td></tr>
-          <tr><td><code>uv venv</code></td><td><code>.venv</code> in project</td><td class="ok">✅</td></tr>
-          <tr><td><code>poetry</code> <span class="dim">(virtualenvs.in-project = true)</span></td><td><code>.venv</code> in project</td><td class="ok">✅</td></tr>
-          <tr><td><code>pipenv</code> <span class="dim">(PIPENV_VENV_IN_PROJECT=1)</span></td><td><code>.venv</code> in project</td><td class="ok">✅</td></tr>
-          <tr><td>Custom-named directory</td><td>any name, via <code>$AUTOACTIVATOR_VENV_NAME</code></td><td class="ok">✅</td></tr>
-          <tr><td><code>poetry</code> / <code>pipenv</code> <span class="dim">(defaults)</span></td><td>venv outside the project</td><td class="no">❌</td></tr>
-          <tr><td><code>pyenv-virtualenv</code>, <code>hatch</code></td><td>venv outside the project</td><td class="no">❌</td></tr>
-          <tr><td>Conda / Miniconda</td><td><code>$CONDA_PREFIX/envs/…</code></td><td class="no">❌</td></tr>
+          <tr><td><code>python -m venv</code></td><td><code>.venv</code> / <code>venv</code> / <code>env</code> in project</td><td class="ok">✓</td></tr>
+          <tr><td><code>virtualenv</code></td><td><code>env</code> in project</td><td class="ok">✓</td></tr>
+          <tr><td><code>uv venv</code></td><td><code>.venv</code> in project</td><td class="ok">✓</td></tr>
+          <tr><td><code>poetry</code> <span class="dim">(virtualenvs.in-project = true)</span></td><td><code>.venv</code> in project</td><td class="ok">✓</td></tr>
+          <tr><td><code>pipenv</code> <span class="dim">(PIPENV_VENV_IN_PROJECT=1)</span></td><td><code>.venv</code> in project</td><td class="ok">✓</td></tr>
+          <tr><td>Custom-named directory</td><td>any name, via <code>$AUTOACTIVATOR_VENV_NAME</code></td><td class="ok">✓</td></tr>
+          <tr><td><code>poetry</code> / <code>pipenv</code> <span class="dim">(defaults)</span></td><td>venv outside the project</td><td class="no">✗</td></tr>
+          <tr><td><code>pyenv-virtualenv</code>, <code>hatch</code></td><td>venv outside the project</td><td class="no">✗</td></tr>
+          <tr><td>Conda / Miniconda</td><td><code>$CONDA_PREFIX/envs/…</code></td><td class="no">✗</td></tr>
         </tbody>
       </table>
     </div>
 
     <h3 class="sub">Multiple venvs in one project</h3>
-    <p class="lede tight">First match wins, in this order: <code>$AUTOACTIVATOR_VENV_NAME</code> → <code>.venv</code> → <code>venv</code> → <code>env</code> → <code>virtualenv</code> → first venv-looking directory (alphabetical).</p>
+    <p class="lede tight">First match wins, in this order:</p>
+    <div class="priority">
+      <code>$AUTOACTIVATOR_VENV_NAME</code><span class="arr">→</span>
+      <code>.venv</code><span class="arr">→</span>
+      <code>venv</code><span class="arr">→</span>
+      <code>env</code><span class="arr">→</span>
+      <code>virtualenv</code><span class="arr">→</span>
+      <span>first venv-looking directory (alphabetical)</span>
+    </div>
 
     <h3 class="sub">Prefer a non-standard name?</h3>
     <p class="lede tight">Add this before the AutoActivator block in your shell config:</p>
