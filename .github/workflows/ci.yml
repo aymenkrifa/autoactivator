@@ -26,6 +26,7 @@ jobs:
           bash -n _constants.sh
           bash -n tests/test_activator.sh
           bash -n tests/test_subcommands.sh
+          bash -n tests/test_setup.sh
           bash -n bench/bench.sh
 
       - name: Syntax check (zsh)
@@ -45,6 +46,7 @@ jobs:
           shellcheck --shell=bash --severity=warning _constants.sh
           shellcheck --shell=bash --severity=warning tests/test_activator.sh
           shellcheck --shell=bash --severity=warning tests/test_subcommands.sh
+          shellcheck --shell=bash --severity=warning tests/test_setup.sh
 
       - name: Activator tests (bash)
         run: bash tests/test_activator.sh
@@ -57,6 +59,11 @@ jobs:
 
       - name: Subcommand tests (zsh)
         run: zsh tests/test_subcommands.sh
+
+      # setup.sh is bash-only (piped installs run it under bash), so this
+      # suite has no zsh variant.
+      - name: Setup tests (bash)
+        run: bash tests/test_setup.sh
 
   test-macos:
     runs-on: macos-latest
@@ -76,3 +83,8 @@ jobs:
 
       - name: Subcommand tests (zsh)
         run: zsh tests/test_subcommands.sh
+
+      # The system bash 3.2 is exactly what a piped install runs under on
+      # macOS, so this is the highest-value environment for the installer.
+      - name: Setup tests (system bash 3.2)
+        run: /bin/bash tests/test_setup.sh

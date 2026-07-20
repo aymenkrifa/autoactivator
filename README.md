@@ -32,7 +32,7 @@ If you activate a venv by hand, AutoActivator leaves it alone — no automatic s
 ## Requirements
 
 - **bash** or **zsh**
-- **git** — used for installation and updates
+- **git** — recommended for installation and updates; without it, the installer falls back to a tarball download (needs **curl** or **wget**, plus **tar**)
 - Linux or macOS (both covered by CI, including macOS's stock bash 3.2)
 
 No Python required.
@@ -40,10 +40,10 @@ No Python required.
 ## Installation
 
 ```bash
-curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <shell>
+curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash
 ```
 
-Replace `<shell>` with `bash`, `zsh`, or both:
+No arguments needed — the installer detects your shell from `$SHELL` and wires up the matching rc file (creating it if it doesn't exist). Want a specific shell (or both)? Pass it explicitly:
 
 ```bash
 # zsh only
@@ -62,7 +62,7 @@ curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s zsh bash
 ```bash
 git clone https://github.com/aymenkrifa/autoactivator.git ~/.autoactivator
 chmod +x ~/.autoactivator/setup.sh
-~/.autoactivator/setup.sh <shell>
+~/.autoactivator/setup.sh   # optionally pass a shell: ~/.autoactivator/setup.sh zsh
 ```
 
 </details>
@@ -81,6 +81,8 @@ autoactivator update
 ```
 
 This pulls the latest changes and re-sources the hook in your current shell. The update will refuse to run if you have local modifications in `~/.autoactivator`.
+
+Installed without git? `autoactivator update` will point you back to the install one-liner — re-running it refreshes the install in place (and upgrades it to a git checkout once git is available).
 
 ## Tool support
 

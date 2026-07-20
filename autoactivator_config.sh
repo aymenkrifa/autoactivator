@@ -224,6 +224,8 @@ _autoactivator_cmd_doctor() {
         else
             _autoactivator_check warn "local modifications in $_AUTOACTIVATOR_DIR — \`update\` will refuse to run"
         fi
+    elif [ -f "$_AUTOACTIVATOR_DIR/autoactivator_config.sh" ]; then
+        _autoactivator_check ok "install present at $_AUTOACTIVATOR_DIR (tarball install — update by re-running the installer)"
     else
         _autoactivator_check fail "repo NOT found at $_AUTOACTIVATOR_DIR"
     fi
@@ -321,7 +323,9 @@ _autoactivator_cmd_uninstall() {
 
 _autoactivator_cmd_update() {
     if [ ! -d "$_AUTOACTIVATOR_DIR/.git" ]; then
-        _autoactivator_msg 2 "not a git checkout at $_AUTOACTIVATOR_DIR — cannot update."
+        _autoactivator_msg 2 "not a git checkout at $_AUTOACTIVATOR_DIR (installed without git)."
+        _autoactivator_msg 2 "update by re-running the installer:"
+        _autoactivator_msg 2 "  curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash"
         return 1
     fi
 

@@ -188,12 +188,13 @@
     </div>
 
     <div class="tabs" role="tablist" aria-label="Choose your shell">
-      <button data-shell="zsh" class="on" aria-pressed="true">zsh</button>
+      <button data-shell="" class="on" aria-pressed="true">auto</button>
+      <button data-shell="zsh" aria-pressed="false">zsh</button>
       <button data-shell="bash" aria-pressed="false">bash</button>
       <button data-shell="zsh bash" aria-pressed="false">both</button>
     </div>
     <div class="install">
-      <code id="cmdline">curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <b id="shellarg">zsh</b></code>
+      <code id="cmdline">curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash<b id="shellarg"></b></code>
       <button id="copy" aria-label="Copy install command">copy</button>
     </div>
   </section>
@@ -224,7 +225,11 @@
 
   <section id="install">
     <h2>Install</h2>
-    <p class="lede">You need <b>bash</b> or <b>zsh</b>, <b>git</b>, and Linux or macOS — both covered by CI, including macOS's stock bash 3.2. No Python required.</p>
+    <p class="lede">You need <b>bash</b> or <b>zsh</b> and Linux or macOS — both covered by CI, including macOS's stock bash 3.2. <b>git</b> is recommended; without it the installer falls back to a tarball via <b>curl</b>/<b>wget</b> + <b>tar</b>. No Python required.</p>
+
+<pre data-label="auto-detect (recommended)">curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash</pre>
+
+    <p class="lede fine">No arguments needed — the installer detects your shell from <code>$SHELL</code> and creates the rc file if it's missing. Want a specific shell (or both)?</p>
 
 <pre class="grouped" data-label="zsh">curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <span class="y">zsh</span></pre>
 
@@ -236,7 +241,7 @@
 
     <h3 class="sub">Update &amp; uninstall</h3>
 <pre class="grouped" data-label="update">autoactivator <span class="s">update</span></pre>
-    <p class="lede fine">Pulls the latest version and re-sources the hook in your current shell.</p>
+    <p class="lede fine">Pulls the latest version and re-sources the hook in your current shell. Installed without git? Re-run the install one-liner instead — it refreshes the install in place (and upgrades it to a git checkout once git is available).</p>
 
 <pre data-label="uninstall">autoactivator <span class="s">uninstall</span></pre>
     <p class="lede fine">Removes the hook from your rc files, backing them up first — add <code>--purge</code> to also delete <code>~/.autoactivator</code>.</p>
@@ -338,7 +343,7 @@
     t.addEventListener('click', function(){
       tabs.forEach(function(o){ o.classList.remove('on'); o.setAttribute('aria-pressed','false'); });
       t.classList.add('on'); t.setAttribute('aria-pressed','true');
-      shellarg.textContent = t.dataset.shell;
+      shellarg.textContent = t.dataset.shell ? ' -s ' + t.dataset.shell : '';
     });
   });
 

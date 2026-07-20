@@ -27,23 +27,27 @@ Shell scripts in this repo — including the tests and the benchmark — are lin
 shellcheck --severity=warning setup.sh bench/bench.sh
 shellcheck --shell=bash --severity=warning activator.sh autoactivator_config.sh _constants.sh tests/*.sh
 bash -n setup.sh activator.sh autoactivator_config.sh _constants.sh tests/*.sh bench/bench.sh
-zsh -n activator.sh autoactivator_config.sh _constants.sh tests/*.sh bench/bench.sh
+zsh -n activator.sh autoactivator_config.sh _constants.sh tests/test_activator.sh tests/test_subcommands.sh bench/bench.sh
 ```
+
+(`setup.sh` and `tests/test_setup.sh` are bash-only — piped installs always run under bash — so they are excluded from the `zsh -n` check.)
 
 `activator.sh` is sourced by both `bash` and `zsh`, so any zsh-specific syntax must be guarded by `[[ -n "$ZSH_VERSION" ]]` and any bash-specific syntax by `[[ -n "$BASH_VERSION" ]]`.
 
 ## Tests
 
-The repo has two black-box test suites, neither of which needs Python or an external test framework:
+The repo has three black-box test suites, none of which needs Python or an external test framework:
 
 - [`tests/test_activator.sh`](tests/test_activator.sh) builds a fake project tree in a temp directory, sources `activator.sh`, and asserts behavior by invoking `_check_for_venv` directly.
 - [`tests/test_subcommands.sh`](tests/test_subcommands.sh) sources the full config under a throwaway `$HOME` and exercises the `autoactivator` subcommands.
+- [`tests/test_setup.sh`](tests/test_setup.sh) runs the installer end-to-end against a local fixture repo and tarball under throwaway `$HOME`s — no network. It is bash-only, like the installer itself.
 
-Run both under both shells before opening a PR:
+Run them before opening a PR (the first two under both shells):
 
 ```bash
 bash tests/test_activator.sh   && zsh tests/test_activator.sh
 bash tests/test_subcommands.sh && zsh tests/test_subcommands.sh
+bash tests/test_setup.sh
 ```
 
 CI runs all of these on every push and pull request, on Linux and on macOS (where the system bash 3.2 exercises the cacheless code path).

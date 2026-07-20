@@ -1,8 +1,8 @@
 # Releasing
 
 AutoActivator ships as source — installs happen via `setup.sh` (`git clone` /
-`git pull`), so a release is a **git tag + a GitHub Release**, with no build
-artifacts. The `autoactivator version` command derives its output from
+`git pull`, with a tarball fallback when git is absent), so a release is a
+**git tag + a GitHub Release**, with no build artifacts. The `autoactivator version` command derives its output from
 `git describe --tags`, so nothing in the code hardcodes the version.
 
 ## Versioning
