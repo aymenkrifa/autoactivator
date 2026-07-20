@@ -86,9 +86,14 @@
         border:1px solid var(--border);border-radius:5px;padding:1px 6px}
 
   /* code blocks */
-  .codewrap{position:relative;margin:14px 0 26px}
+  .codewrap{position:relative;margin:14px 0 26px;border:1px solid var(--border);border-radius:12px;background:var(--panel);overflow:hidden}
   .codewrap.grouped{margin-bottom:10px}
-  .codewrap pre{margin:0}
+  .codewrap pre{margin:0;border:0;border-radius:0}
+  .codebar{display:flex;align-items:center;justify-content:space-between;gap:10px;
+           padding:6px 9px 6px 16px;border-bottom:1px solid var(--border);background:var(--panel-2)}
+  .codebar .lbl{font-family:var(--mono);font-size:12px;letter-spacing:1px;color:var(--muted)}
+  .codebar .copybtn{position:static}
+  .lede.fine + .lede.fine{margin-top:8px}
   pre{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;
       font-family:var(--mono);font-size:13px;color:var(--muted);overflow-x:auto;margin:14px 0 26px}
   pre .k{color:var(--blue)} pre .s{color:var(--green)} pre .y{color:var(--yellow)} pre .c{color:var(--muted)}
@@ -208,23 +213,19 @@
     <h2>Install</h2>
     <p class="lede">You need <b>bash</b> or <b>zsh</b>, <b>git</b>, and Linux or macOS — both covered by CI, including macOS's stock bash 3.2. No Python required. <em>(Plot twist: a Python tool that doesn't need Python.)</em></p>
 
-<pre class="grouped"><span class="c"># zsh only</span>
-curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <span class="y">zsh</span></pre>
+<pre class="grouped" data-label="zsh">curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <span class="y">zsh</span></pre>
 
-<pre class="grouped"><span class="c"># bash only</span>
-curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <span class="y">bash</span></pre>
+<pre class="grouped" data-label="bash">curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <span class="y">bash</span></pre>
 
-<pre><span class="c"># both</span>
-curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <span class="y">zsh bash</span></pre>
+<pre data-label="zsh + bash">curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <span class="y">zsh bash</span></pre>
 
     <p class="lede tight">Then restart your terminal, or <code>source ~/.zshrc</code> / <code>source ~/.bashrc</code>. Later on:</p>
 
-<pre class="grouped"><span class="c"># pull the latest version and re-source the hook in your current shell</span>
-autoactivator <span class="s">update</span></pre>
+<pre class="grouped" data-label="update">autoactivator <span class="s">update</span></pre>
+    <p class="lede fine">Pulls the latest version and re-sources the hook in your current shell.</p>
 
-<pre><span class="c"># remove the hook from your rc files (backs them up first);</span>
-<span class="c"># add --purge to also delete ~/.autoactivator</span>
-autoactivator <span class="s">uninstall</span></pre>
+<pre data-label="uninstall">autoactivator <span class="s">uninstall</span></pre>
+    <p class="lede fine">Removes the hook from your rc files, backing them up first — add <code>--purge</code> to also delete <code>~/.autoactivator</code>.</p>
 
     <p class="lede fine">Prefer to see what you're running first? <a href="https://github.com/aymenkrifa/autoactivator#installation">Manual installation</a> is three lines: clone, <code>chmod</code>, run.</p>
   </section>
@@ -254,8 +255,8 @@ autoactivator <span class="s">uninstall</span></pre>
     <p class="lede tight">First match wins, in this order: <code>$AUTOACTIVATOR_VENV_NAME</code> → <code>.venv</code> → <code>venv</code> → <code>env</code> → <code>virtualenv</code> → first venv-looking directory (alphabetical).</p>
 
     <h3 class="sub">Prefer a non-standard name?</h3>
-<pre><span class="c"># add before the AutoActivator block in your shell config</span>
-<span class="k">export</span> AUTOACTIVATOR_VENV_NAME=<span class="s">myenv</span></pre>
+    <p class="lede tight">Add this before the AutoActivator block in your shell config:</p>
+<pre data-label="shell config"><span class="k">export</span> AUTOACTIVATOR_VENV_NAME=<span class="s">myenv</span></pre>
     <p class="lede fine">If the named directory doesn't exist in a project, the standard priority list applies — the override is a preference, not a hard requirement.</p>
   </section>
 
@@ -331,13 +332,14 @@ autoactivator <span class="s">uninstall</span></pre>
     return document.getElementById('cmdline').textContent;
   });
 
-  // Every code block gets a copy button, pinned to the block's corner on a
-  // non-scrolling wrapper so it stays put while the code scrolls under it.
-  // Copy yields only the runnable lines — comments and blanks are stripped.
+  // Every code block becomes a titled card: its data-label goes in a header
+  // bar next to the copy button, on a non-scrolling wrapper so the button
+  // stays put while the code scrolls under it. Copy yields only the runnable
+  // lines — comments and blanks are stripped.
   document.querySelectorAll('pre').forEach(function(pre){
     var wrap = document.createElement('div');
     wrap.className = 'codewrap' + (pre.classList.contains('grouped') ? ' grouped' : '');
-    pre.parentNode.insertBefore(wrap, pre); wrap.appendChild(pre);
+    pre.parentNode.insertBefore(wrap, pre);
     var btn = document.createElement('button');
     btn.className = 'copybtn'; btn.textContent = 'copy';
     btn.setAttribute('aria-label', 'Copy command');
@@ -347,7 +349,15 @@ autoactivator <span class="s">uninstall</span></pre>
         return t && t.charAt(0) !== '#';
       }).join('\n');
     });
-    wrap.appendChild(btn);
+    if(pre.dataset.label){
+      var bar = document.createElement('div'); bar.className = 'codebar';
+      var lbl = document.createElement('span'); lbl.className = 'lbl';
+      lbl.textContent = pre.dataset.label;
+      bar.appendChild(lbl); bar.appendChild(btn);
+      wrap.appendChild(bar); wrap.appendChild(pre);
+    } else {
+      wrap.appendChild(pre); wrap.appendChild(btn);
+    }
   });
 })();
 </script>
