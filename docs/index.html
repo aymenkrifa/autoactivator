@@ -87,6 +87,7 @@
 
   /* code blocks */
   .codewrap{position:relative;margin:14px 0 26px}
+  .codewrap.grouped{margin-bottom:10px}
   .codewrap pre{margin:0}
   pre{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;
       font-family:var(--mono);font-size:13px;color:var(--muted);overflow-x:auto;margin:14px 0 26px}
@@ -207,21 +208,21 @@
     <h2>Install</h2>
     <p class="lede">You need <b>bash</b> or <b>zsh</b>, <b>git</b>, and Linux or macOS — both covered by CI, including macOS's stock bash 3.2. No Python required. <em>(Plot twist: a Python tool that doesn't need Python.)</em></p>
 
-<pre><span class="c"># zsh only</span>
-curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <span class="y">zsh</span>
+<pre class="grouped"><span class="c"># zsh only</span>
+curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <span class="y">zsh</span></pre>
 
-<span class="c"># bash only</span>
-curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <span class="y">bash</span>
+<pre class="grouped"><span class="c"># bash only</span>
+curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <span class="y">bash</span></pre>
 
-<span class="c"># both</span>
+<pre><span class="c"># both</span>
 curl -sSL https://autoactivator.aymenkrifa.com/setup.sh | bash -s <span class="y">zsh bash</span></pre>
 
     <p class="lede tight">Then restart your terminal, or <code>source ~/.zshrc</code> / <code>source ~/.bashrc</code>. Later on:</p>
 
-<pre><span class="c"># pull the latest version and re-source the hook in your current shell</span>
-autoactivator <span class="s">update</span>
+<pre class="grouped"><span class="c"># pull the latest version and re-source the hook in your current shell</span>
+autoactivator <span class="s">update</span></pre>
 
-<span class="c"># remove the hook from your rc files (backs them up first);</span>
+<pre><span class="c"># remove the hook from your rc files (backs them up first);</span>
 <span class="c"># add --purge to also delete ~/.autoactivator</span>
 autoactivator <span class="s">uninstall</span></pre>
 
@@ -332,13 +333,20 @@ autoactivator <span class="s">uninstall</span></pre>
 
   // Every code block gets a copy button, pinned to the block's corner on a
   // non-scrolling wrapper so it stays put while the code scrolls under it.
+  // Copy yields only the runnable lines — comments and blanks are stripped.
   document.querySelectorAll('pre').forEach(function(pre){
-    var wrap = document.createElement('div'); wrap.className = 'codewrap';
+    var wrap = document.createElement('div');
+    wrap.className = 'codewrap' + (pre.classList.contains('grouped') ? ' grouped' : '');
     pre.parentNode.insertBefore(wrap, pre); wrap.appendChild(pre);
     var btn = document.createElement('button');
     btn.className = 'copybtn'; btn.textContent = 'copy';
-    btn.setAttribute('aria-label', 'Copy code');
-    wireCopy(btn, function(){ return pre.innerText; });
+    btn.setAttribute('aria-label', 'Copy command');
+    wireCopy(btn, function(){
+      return pre.innerText.split('\n').filter(function(l){
+        var t = l.trim();
+        return t && t.charAt(0) !== '#';
+      }).join('\n');
+    });
     wrap.appendChild(btn);
   });
 })();
