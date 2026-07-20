@@ -35,7 +35,7 @@ If you activate a venv by hand, AutoActivator leaves it alone — no automatic s
 - **git** — used for installation and updates
 - Linux or macOS (both covered by CI, including macOS's stock bash 3.2)
 
-No Python required. *(Plot twist: a Python tool that doesn't need Python.)* 🤷
+No Python required.
 
 ## Installation
 
